@@ -1,17 +1,11 @@
-timetracker:
-  build: .
-  # ports:
-  #   - "5000:5000"
-  # environment:
-  #   ENV : DEV
-  # volumes:
-  #   - ./app:/app
-  # links:
-  #   - mysql
-  #   - java
-database:
-  image: timetracker/mysql:0.1
-  environment:
+version: "3"
+services:
+  database:
+    image: mysql:8.0
+    container_name: database
+    environment:
       MYSQL_ROOT_PASSWORD: root
-# app:
-#   image: java:17.0
+    ports:
+      - "3308:3306"
+    volumes:
+      - ./mysql/database.sql:/docker-entrypoint-initdb.d/database.sql

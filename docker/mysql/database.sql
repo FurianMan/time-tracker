@@ -15,3 +15,5 @@ CREATE TABLE IF NOT EXISTS time_tracker.tasks(
 	user_id INT NOT NULL,
 	FOREIGN KEY (user_id) REFERENCES time_tracker.users (user_id) ON DELETE CASCADE
 );
+CREATE USER 'javauser'@'%' IDENTIFIED BY 'javapassword';
+GRANT ALL PRIVILEGES ON time_tracker.* TO 'javauser'@'%';
