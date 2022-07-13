@@ -5,14 +5,16 @@ CREATE TABLE IF NOT EXISTS time_tracker.users(
     surname VARCHAR(30) NOT NULL,
     patronymic VARCHAR(30),
     position VARCHAR(30) NOT NULL,
-    birthday DATE NOT NULL
+    birthday DATE NOT NULL,
+    UNIQUE (name,surname,position,birthday)
 );
 CREATE TABLE IF NOT EXISTS time_tracker.tasks(
 	task_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	number INT NOT NULL,
+	task_num INT NOT NULL,
 	start_time DATETIME NOT NULL,
 	end_time DATETIME,
 	user_id INT NOT NULL,
+    UNIQUE (task_num,start_time,end_time,user_id),
 	FOREIGN KEY (user_id) REFERENCES time_tracker.users (user_id) ON DELETE CASCADE
 );
 CREATE USER 'javauser'@'%' IDENTIFIED BY 'javapassword';
