@@ -3,7 +3,7 @@ package com.github.FurianMan.time_tracker;
 import java.sql.*;
 public class MysqlUtilities {
     private final String driverName = "com.mysql.cj.jdbc.Driver";
-    private final String connectionString = "jdbc:mysql://100.110.1.1:3308/time_tracker";
+    private final String connectionString = "jdbc:mysql://db:3306/time_tracker";
     private final String login = "javauser";
     private final String password = "javapassword";
     private static Connection conn;
@@ -34,7 +34,7 @@ public class MysqlUtilities {
             return;
         }
     }
-    public void InsertInto(String query) {
+    public void insertInto(String name, String surname, String position, String birthday) {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
@@ -52,7 +52,7 @@ public class MysqlUtilities {
         }
         try {
             statmt = conn.createStatement();
-            statmt.executeUpdate("INSERT INTO %s (name, surname, position, birthday) VALUES ('Влад', 'Рих', 'QA', '1993-10-01'); ");
+            statmt.executeUpdate(String.format("INSERT INTO users (name, surname, position, birthday) VALUES ({0}, {1}, {2}, {3});", name, surname, position, birthday), );
 
             System.out.println("Таблица заполнена");
         }
