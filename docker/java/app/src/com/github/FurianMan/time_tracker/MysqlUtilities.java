@@ -2,10 +2,10 @@ package com.github.FurianMan.time_tracker;
 
 import java.sql.*;
 public class MysqlUtilities {
-    private final String driverName = "com.mysql.cj.jdbc.Driver";
-    private final String connectionString = "jdbc:mysql://db:3306/time_tracker";
-    private final String login = "javauser";
-    private final String password = "javapassword";
+    private final String driverName = Constants.getDriverName();
+    private final String connectionString = Constants.getConnectionString();
+    private final String login = Constants.getDbLogin();
+    private final String password = Constants.getDbPassword();
     private static Connection conn;
     private static Statement statmt;
     private static ResultSet resSet;

@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 class MyHttpServer {
-    private static String appVersion = "Time Tracker Version 0.1\n";
-    private static int serverPort = Integer.parseInt(Utilities.getConstants("APP_PORT"));
+    private static String appVersion = Constants.getAppVersion();
+    private static int serverPort = Constants.getServerPort();
     private static com.sun.net.httpserver.HttpServer server = null;
     static void startServer () {
         try {
@@ -49,7 +49,7 @@ class MyHttpServer {
 //                    checkFields(request);
 //                    requestMap = new Gson().fromJson(request, MysqlTables.Users.class);
 //                    System.out.println(requestMap.values());
-                    MysqlTables.Users newUser = new Gson().fromJson(request, MysqlTables.Users.class);
+                    MysqlTables.Users newUser = new Gson().fromJson(request, MysqlTables.Users.class); // TODO добавить проверку на поля
                     MysqlUtilities insertNewUser = new MysqlUtilities();
                     insertNewUser.insertInto(newUser.getName(), newUser.getSurname(), newUser.getPosition(), newUser.getBirthday());
                     httpExchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);

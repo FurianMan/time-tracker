@@ -10,7 +10,5 @@ public class Main {
         //new MysqlUtilities().InsertInto("INSERT INTO time_tracker.Users (name, surname, position, birthday) VALUES ('Влад', 'Рих', 'QA', '1993-10-01'); ");
 
     }
-    interface TimeTrackerApi {
-        
-    }
+    interface TimeTrackerApi {}
 }
