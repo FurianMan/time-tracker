@@ -2,10 +2,10 @@ package com.github.FurianMan.time_tracker;
 
 import java.sql.*;
 public class MysqlUtilities {
-    private final String driverName = Constants.getDriverName();
-    private final String connectionString = Constants.getConnectionString();
-    private final String login = Constants.getDbLogin();
-    private final String password = Constants.getDbPassword();
+    private static final String driverName = Constants.getDriverName();
+    private static final String connectionString = Constants.getConnectionString();
+    private static final String login = Constants.getDbLogin();
+    private static final String password = Constants.getDbPassword();
     private static Connection conn;
     private static Statement statmt;
     private static ResultSet resSet;
@@ -35,7 +35,7 @@ public class MysqlUtilities {
             return;
         }
     }
-    public void insertInto(String name, String surname, String position, String birthday) {
+    public static void insertInto(String name, String surname, String position, String birthday) {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {

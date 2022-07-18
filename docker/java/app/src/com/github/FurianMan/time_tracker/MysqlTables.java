@@ -1,29 +1,39 @@
 package com.github.FurianMan.time_tracker;
 
-public class MysqlTables {
+import com.google.gson.annotations.Expose;
 
-     class Users {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@interface JsonRequired
+{
+}
+class TableUsers {
         private int user_id;
-        private String name;
-        private String surname;
         private String patronymic = null;
-        private String position;
-        private String birthday;
+        @JsonRequired private String name;
+        @JsonRequired private String surname;
+        @JsonRequired private String position;
+        @JsonRequired private String birthday;
         private final String tableDestination = "time_tracker.users";
-        Users (String name, String surname, String patronymic, String position, String birthday) {
+          TableUsers (String name, String surname, String patronymic, String position, String birthday) {
             this.name = name;
             this.surname = surname;
             this.patronymic = patronymic;
             this.position = position;
             this.birthday = birthday;
         }
-        Users (String name, String surname, String position, String birthday) {
+         TableUsers (String name, String surname, String position, String birthday) {
             this.name = name;
             this.surname = surname;
             this.position = position;
             this.birthday = birthday;
         }
-        public String getName() {
+         public String getName() {
             return name;
         }
         public  void setName(String name) {
@@ -57,14 +67,14 @@ public class MysqlTables {
             return tableDestination;
         }
         public void display () {
-            System.out.println(name +" "+ surname +" "+  position +" "+ birthday);
+            System.out.println(name +" "+ surname +" "+ patronymic +" "+position +" "+ birthday);
         }
     }
-    class Tasks {
-        private String task_num;
-        private String start_time;
+    class TableTasks {
+        @JsonRequired private String task_num;
+        @JsonRequired private String start_time;
         private String end_time;
-        Tasks (String task_num, String start_time, String end_time) {
+        TableTasks (String task_num, String start_time, String end_time) {
             this.task_num = task_num;
             this.start_time = start_time;
             this.end_time = end_time;
@@ -94,4 +104,3 @@ public class MysqlTables {
             this.start_time = start_time;
         }
     }
-}
