@@ -1,14 +1,15 @@
 package com.github.FurianMan.time_tracker;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.FurianMan.time_tracker.Exceptions.HttpHeaderException;
 import com.google.gson.*;
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,17 +20,26 @@ public class Utilities {
         return env.get(keyName);
     }
     public static Gson gsonBuilderSet () { return  null;}
-
-    public static void checkContentType (HttpExchange exchange) throws IOException {
-        if (String.valueOf(exchange.getRequestHeaders().get("Content-type")) != "application/json") {
-            String respText = "Header 'Content-Type' has to be equal 'application/json'";
-            exchange.sendResponseHeaders(400, respText.getBytes(StandardCharsets.UTF_8).length);
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            OutputStream output = exchange.getResponseBody();
-            output.write(respText.getBytes());
-            output.flush();
+    public static void checkContentType (HttpExchange exchange) throws IOException, HttpHeaderException {
+        /**
+         * Метод предназначен для проверки наличия поля 'Content-type: application/json'
+         * Таким образом мы обрабатываем дату только в формате json
+         * @param exchange: принимаем объект 'HttpExchange'.
+         *                Через этот объект мы взаимодействуем с входящим запросом
+         * Если происходит исключение, то за его обработку отвечает метод, который вызвал функцию.
+         * */
+        if (!exchange.getRequestHeaders().get("Content-type").contains("application/json")) {
+            throw new HttpHeaderException("Header 'Content-Type' has to be equal 'application/json'");
         }
     }
+    public static String serializeErrToJson (String data) {
+        Gson g = new Gson();
+        String str = g.toJson("{message:" + data + "}");
+        return str;
+    }
+//    public static Map<String, String> serializeDataToJson (String data) {
+//
+//    }
     static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
 
         public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {

@@ -1,5 +1,7 @@
 package com.github.FurianMan.time_tracker;
 
+import com.github.FurianMan.time_tracker.Exceptions.MysqlConnectException;
+
 import java.sql.*;
 public class MysqlUtilities {
     private static final String driverName = Constants.getDriverName();
@@ -11,22 +13,24 @@ public class MysqlUtilities {
     private static ResultSet resSet;
     private String query;
 
-    public void connectToDatabase() {
+    public Connection connectToDatabase() throws MysqlConnectException {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
-            System.out.println("Can't get class. No driver found");
             e.printStackTrace();
-            return;
+            throw new MysqlConnectException("Can't get class. No driver found", e);
         }
         //Connection conn = null;
         try {
             conn = DriverManager.getConnection(connectionString, login, password);
+            return conn;
         } catch (SQLException e) {
             System.out.println("Can't get connection. Incorrect URL");
             e.printStackTrace();
-            return;
         }
+        return conn;
+    }
+    public void disconnectToDatabase(Connection conn) {
         try {
             conn.close();
         } catch (SQLException e) {
