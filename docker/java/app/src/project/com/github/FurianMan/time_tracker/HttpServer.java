@@ -1,6 +1,7 @@
 package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.Exceptions.HttpHeaderException;
+import com.github.FurianMan.time_tracker.Exceptions.MysqlConnectException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
@@ -45,29 +46,43 @@ class MyHttpServer {
         exchange.close();
         }
     static void handleRequestUser(HttpExchange exchange) throws IOException {
-            String respText;
-            OutputStream output;
-            String request;
-            request = new String(exchange.getRequestBody().readAllBytes());
-            TableUsers newUser = gson.fromJson(request, TableUsers.class);
-            switch (exchange.getRequestMethod()) {
+        String respText;
+        OutputStream output;
+        switch (exchange.getRequestMethod()) {
                 case "GET":
-                    respText = "This is GET";
                     try {
                         Utilities.checkContentType(exchange);
+                        String request = new String(exchange.getRequestBody().readAllBytes());
+                        TableUsers newUser = gson.fromJson(request, TableUsers.class);
+                        respText = MysqlUtilities.getUser(newUser.getName(), newUser.getSurname(), newUser.getPosition(), newUser.getBirthday());
+                        exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                        exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
+                        output = exchange.getResponseBody();
+                        output.write(respText.getBytes());
+                        output.flush();
                     } catch (HttpHeaderException e) {
-                        throw new RuntimeException(e);
+                        httpServerLogger.error(e.getMessage());
+                        respText = Utilities.serializeErrToJson(e.getMessage());
+                        exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                        exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
+                        output = exchange.getResponseBody();
+                        output.write(respText.getBytes());
+                        output.flush();
+                    } catch (MysqlConnectException e) {
+                        respText = Utilities.serializeErrToJson(e.getMessage());
+                        exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                        exchange.sendResponseHeaders(500, respText.getBytes(StandardCharsets.UTF_8).length);
+                        output = exchange.getResponseBody();
+                        output.write(respText.getBytes());
+                        output.flush();
                     }
-                    exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
-                    output = exchange.getResponseBody();
-                    output.write(respText.getBytes());
-                    output.flush();
                 case "POST":
                     try {
                         Utilities.checkContentType(exchange);
+                        String request = new String(exchange.getRequestBody().readAllBytes());
+                        TableUsers newUser = gson.fromJson(request, TableUsers.class);
                         MysqlUtilities.insertInto(newUser.getName(), newUser.getSurname(), newUser.getPosition(), newUser.getBirthday());
-                        exchange.sendResponseHeaders(200, 0);
-                        httpServerLogger.info("Пользователь успешно создан" + newUser);
+                        exchange.sendResponseHeaders(200, -1);
                     } catch (JsonParseException e) {
                         httpServerLogger.error(e.getMessage());
                         respText = Utilities.serializeErrToJson(e.getMessage());
@@ -86,7 +101,14 @@ class MyHttpServer {
                         output = exchange.getResponseBody();
                         output.write(respText.getBytes());
                         output.flush();
-                }
+                } catch (MysqlConnectException e) {
+                        respText = Utilities.serializeErrToJson(e.getMessage());
+                        exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                        exchange.sendResponseHeaders(500, respText.getBytes(StandardCharsets.UTF_8).length);
+                        output = exchange.getResponseBody();
+                        output.write(respText.getBytes());
+                        output.flush();
+                    }
 
                 case "PUT":
                     respText = "This is PUT";

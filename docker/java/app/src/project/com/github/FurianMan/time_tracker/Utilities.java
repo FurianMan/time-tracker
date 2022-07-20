@@ -1,15 +1,15 @@
 package com.github.FurianMan.time_tracker;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.FurianMan.time_tracker.Exceptions.HttpHeaderException;
+import com.github.FurianMan.time_tracker.Exceptions.MysqlConnectException;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
+import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.HashMap;
+import java.sql.ResultSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +19,6 @@ public class Utilities {
     static String getConstants (String keyName) {
         return env.get(keyName);
     }
-    public static Gson gsonBuilderSet () { return  null;}
     public static void checkContentType (HttpExchange exchange) throws IOException, HttpHeaderException {
         /**
          * Метод предназначен для проверки наличия поля 'Content-type: application/json'
@@ -37,9 +36,13 @@ public class Utilities {
         String str = g.toJson("{message:" + data + "}");
         return str;
     }
-//    public static Map<String, String> serializeDataToJson (String data) {
-//
+
+//    public static String getUserInfo(TableUsers User) throws MysqlConnectException {
+//        ResultSet resSet = MysqlUtilities.getUser(User.getName(), User.getSurname(), User.getPosition(), User.getBirthday());
+//        JSONObject jsonObject = MysqlUtilities.convertToJSON(resSet);
+//        return jsonObject.toString();
 //    }
+
     static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
 
         public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
