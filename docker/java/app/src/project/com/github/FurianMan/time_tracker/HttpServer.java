@@ -99,8 +99,12 @@ class MyHttpServer {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers newUser = gsonUsers.fromJson(request, TableUsers.class);
-                    MysqlUtilities.insertUser(newUser);
-                    exchange.sendResponseHeaders(200, -1);
+                    respText = gsonUsers.toJson(MysqlUtilities.insertUser(newUser));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
                 } catch (JsonParseException e) {
                     httpServerLogger.error(e.getMessage());
                     respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));

@@ -42,7 +42,7 @@ public class MysqlUtilities {
         }
     }
 
-    public static void insertUser(TableUsers newUser) throws ApplicationException {
+    public static String insertUser(TableUsers newUser) throws ApplicationException {
         String name = newUser.getName();
         String surname = newUser.getSurname();
         String patronymic = newUser.getPatronymic();
@@ -59,6 +59,8 @@ public class MysqlUtilities {
         } finally {
             disconnectToDatabase(conn);
         }
+        TableUsers newUserFromDB = getUser(newUser);
+        return "{\"user_id\": " + newUserFromDB.getUser_id() + "}";
     }
 
     public static TableUsers getUser(TableUsers userForSearching) throws ApplicationException {
@@ -84,13 +86,13 @@ public class MysqlUtilities {
                     userInstance.setBirthday(resSet.getString("birthday"));
                 } while (resSet.next());
             }
+            mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
         } catch (SQLException e) {
             mysqlLogger.error("Can't get result of query to database", e);
             throw new ApplicationException("Can't get result of query to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }
-        mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
         return userInstance;
     }
 
@@ -98,7 +100,7 @@ public class MysqlUtilities {
         /**
          * Перед изменением информации у пользователя, пытаемся его найти через метод getUser
          * @param userForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
-         *
+         * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
         * */
         TableUsers userDB = getUser(userForUpdate);
         int user_id = userDB.getUser_id();
@@ -107,18 +109,11 @@ public class MysqlUtilities {
         String patronymic;
         String position;
         String birthday;
-
-        userForUpdate.getNewName().equals(null) ? name = userDB.getName() : name = userForUpdate.getNewName();
-        userForUpdate.getNewSurname().equals(null) ? surname = userDB.getSurname() : surname = userForUpdate.getNewSurname();
-        userForUpdate.getNewPatronymic().equals(null) ? patronymic = userDB.getPatronymic() : patronymic = userForUpdate.getNewPatronymic();
-        userForUpdate.getNewPosition().equals(null) ? position = userDB.getPosition() : position = userForUpdate.getNewPosition();
-        userForUpdate.getNewBirthday().equals(null) ? birthday = userDB.getBirthday() : birthday = userForUpdate.getNewBirthday();
-
-//        String name = userForUpdate.getNewName();
-//        String surname = userForUpdate.getNewSurname();
-//        String patronymic = userForUpdate.getNewPatronymic();
-//        String position = userForUpdate.getNewPosition();
-//        String birthday = userForUpdate.getNewBirthday();
+        name = userForUpdate.getNewName() == null  ? userDB.getName() : userForUpdate.getNewName();
+        surname = userForUpdate.getNewSurname() == null ? userDB.getSurname() : userForUpdate.getNewSurname();
+        patronymic = userForUpdate.getNewPatronymic() == null ? userDB.getPatronymic() : userForUpdate.getNewPatronymic();
+        position = userForUpdate.getNewPosition() == null ? userDB.getPosition() : userForUpdate.getNewPosition();
+        birthday = userForUpdate.getNewBirthday() == null ? userDB.getBirthday() : userForUpdate.getNewBirthday();
         conn = connectToDatabase();
         try {
             statmt = conn.createStatement();
