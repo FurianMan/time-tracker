@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 public class Constants {
     private static final Logger httpServerLogger = LoggerFactory.getLogger(MyHttpServer.class);
     private static final Logger mysqlLogger = LoggerFactory.getLogger(MysqlUtilities.class);
+    private static final Logger utilitieslLogger = LoggerFactory.getLogger(Utilities.class);
     private static final String driverName = "com.mysql.cj.jdbc.Driver";
     private static final String connectionString = "jdbc:mysql://db:3306/time_tracker";
     private static final String dbLogin = "javauser";
@@ -18,7 +19,14 @@ public class Constants {
     public static Logger getHttpServerLogger() {
         return httpServerLogger;
     }
-    public static Logger getMysqlLogger() {return mysqlLogger;}
+
+    public static Logger getMysqlLogger() {
+        return mysqlLogger;
+    }
+
+    public static Logger getUtilitieslLogger() {
+        return utilitieslLogger;
+    }
 
     public static String getDbPassword() {
         return dbPassword;

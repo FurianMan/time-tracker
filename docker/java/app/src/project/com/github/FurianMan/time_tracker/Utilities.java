@@ -1,25 +1,23 @@
 package com.github.FurianMan.time_tracker;
 
-import com.github.FurianMan.time_tracker.Exceptions.HttpHeaderException;
-import com.github.FurianMan.time_tracker.Exceptions.MysqlConnectException;
+import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.Exceptions.ErrResponse;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
-import org.json.JSONObject;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.sql.ResultSet;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Utilities {
     static private Map<String, String> env = System.getenv();
-    static String getConstants (String keyName) {
+    private static final org.slf4j.Logger utilitieslLogger = Constants.getUtilitieslLogger();
+
+    static String getConstants(String keyName) {
         return env.get(keyName);
     }
-    public static void checkContentType (HttpExchange exchange) throws IOException, HttpHeaderException {
+
+    public static void checkContentType(HttpExchange exchange) throws ApplicationException {
         /**
          * Метод предназначен для проверки наличия поля 'Content-type: application/json'
          * Таким образом мы обрабатываем дату только в формате json
@@ -28,20 +26,15 @@ public class Utilities {
          * Если происходит исключение, то за его обработку отвечает метод, который вызвал функцию.
          * */
         if (!exchange.getRequestHeaders().get("Content-type").contains("application/json")) {
-            throw new HttpHeaderException("Header 'Content-Type' has to be equal 'application/json'");
+            utilitieslLogger.error("Can't find Header 'Content-Type: application/json' in http-request");
+            throw new ApplicationException("Header 'Content-Type' has to be equal 'application/json'", 415);
         }
     }
-    public static String serializeErrToJson (String data) {
-        Gson g = new Gson();
-        String str = g.toJson("{message:" + data + "}");
-        return str;
-    }
 
-//    public static String getUserInfo(TableUsers User) throws MysqlConnectException {
-//        ResultSet resSet = MysqlUtilities.getUser(User.getName(), User.getSurname(), User.getPosition(), User.getBirthday());
-//        JSONObject jsonObject = MysqlUtilities.convertToJSON(resSet);
-//        return jsonObject.toString();
-//    }
+    public static ErrResponse makeErrResponseBody(String message) {
+        ErrResponse bodyInstance = new ErrResponse(message);
+        return bodyInstance;
+    }
 
     static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
 
@@ -56,10 +49,10 @@ public class Utilities {
                         if (f.get(pojo) == null) {
                             throw new JsonParseException("Missing field in JSON: " + f.getName());
                         }
-                    } catch (IllegalArgumentException ex) {
-                        Logger.getLogger(TableUsersDeserializer.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IllegalAccessException ex) {
-                        Logger.getLogger(TableUsersDeserializer.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IllegalArgumentException e) {
+                        utilitieslLogger.error("Can't get class for database. No driver found", e);
+                    } catch (IllegalAccessException e) {
+                        utilitieslLogger.error("Can't get class for database. No driver found", e);
                     }
                 }
             }
