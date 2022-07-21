@@ -42,7 +42,7 @@ public class MysqlUtilities {
         }
     }
 
-    public static String insertUser(TableUsers newUser) throws ApplicationException {
+    public static TableUsers insertUser(TableUsers newUser) throws ApplicationException {
         String name = newUser.getName();
         String surname = newUser.getSurname();
         String patronymic = newUser.getPatronymic();
@@ -60,7 +60,7 @@ public class MysqlUtilities {
             disconnectToDatabase(conn);
         }
         TableUsers newUserFromDB = getUser(newUser);
-        return "{\"user_id\": " + newUserFromDB.getUser_id() + "}";
+        return newUserFromDB; //TODO научить возвращать не весь класс, а только user_id
     }
 
     public static TableUsers getUser(TableUsers userForSearching) throws ApplicationException {

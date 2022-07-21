@@ -99,7 +99,8 @@ class MyHttpServer {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers newUser = gsonUsers.fromJson(request, TableUsers.class);
-                    respText = gsonUsers.toJson(MysqlUtilities.insertUser(newUser));
+                    Utilities.validateUserFields(newUser);
+                    respText = gsonUsers.toJson((MysqlUtilities.insertUser(newUser)));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
@@ -126,6 +127,7 @@ class MyHttpServer {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers userForUpdate = gsonUsers.fromJson(request, TableUsers.class);
+                    Utilities.validateUserFields(userForUpdate);
                     MysqlUtilities.updateUser(userForUpdate);
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, -1);

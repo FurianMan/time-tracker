@@ -6,6 +6,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
@@ -47,8 +48,7 @@ class TableUsers {
         this.birthday = birthday;
     }
 
-    TableUsers() {
-    }
+    TableUsers() {}
 
     public String getName() {
         return name;
@@ -146,6 +146,19 @@ class TableUsers {
     public String toString() {
         return " Surname: " + this.surname + "Name: " + this.name + " Patronymic: " + this.patronymic + " Position: " + this.position + " Birthday: " + this.birthday;
     }
+    public ArrayList<String> getValues () {
+        ArrayList<String> values = new ArrayList<>();
+        values.add(getName());
+        values.add(getSurname());
+        values.add(getPatronymic());
+        values.add(getPosition());
+        values.add(getNewName());
+        values.add(getNewSurname());
+        values.add(getNewPatronymic());
+        values.add(getNewPosition());
+        return values;
+    }
+
 }
 
 class TableTasks {
