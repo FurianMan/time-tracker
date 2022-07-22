@@ -75,7 +75,7 @@ class MyHttpServer {
         String respText;
         OutputStream output;
         switch (exchange.getRequestMethod()) {
-            case "GET":
+            case "GET": //TODO сделать возможным поиск по любому параметру
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());

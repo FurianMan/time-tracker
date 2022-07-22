@@ -4,10 +4,8 @@ import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.Exceptions.ErrResponse;
 import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
-import org.dom4j.tree.FilterIterator;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -38,20 +36,30 @@ public class Utilities {
         ErrResponse bodyInstance = new ErrResponse(message);
         return bodyInstance;
     }
-
+    /**
+     * Метод валидации полей для таблицы users, которые указал пользователь.
+     * Для валидации используются регулярные выражения. Строки ограничены размером в 255 символа.
+     * Ограничение идет от mysql.
+     * Если во время валидации что-то идет не так, то выдаем исключение.
+     * @param newUser - пользователь со значениями из http запроса.
+    * */
     public static void validateUserFields(TableUsers newUser) throws ApplicationException {
-        String regexLetters = "[а-яА-ЯёЁA-Za-z]"; // русский + англ алфавит
-        String regexDate = "[1-9][0-9][0-9][0-9]-(0?[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])";
-        for (String field : newUser.getValues()) {
-            if ((!Pattern.matches(regexLetters, field)) && (field != null)) { //TODO не проходит имя, которое подходит под регулярку
+        String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
+        String regexDate = "([1-9][0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"; // дата формата 2023-12-31
+        ArrayList<String> fieldsList = newUser.getValues();
+        for (String field : fieldsList) {
+            if (field != null && !Pattern.matches(regexLetters, field)) {
                 utilitieslLogger.error(String.format("Inappropriate json field value: %s", field));
                 throw new ApplicationException(String.format("Inappropriate json field value: %s", field), 415);
             }
+            utilitieslLogger.debug("Поля прошло валидацию: " + field);
         }
-        if (!Pattern.matches(regexDate, newUser.getBirthday()) ||
-                ((!Pattern.matches(regexDate, newUser.getNewBirthday()) && newUser.getNewBirthday() != null))) {
-                utilitieslLogger.error("Inappropriate field json value birthday or newBirthday");
-                throw new ApplicationException("Inappropriate field json value birthday or newBirthday", 415);
+        /*
+        * Дату проверяем отдельно, а т.к. их может быть две (вторая используется для update), то приходится проверять обе
+        * */
+        if (newUser.getNewBirthday() != null && !Pattern.matches(regexDate, newUser.getNewBirthday()) && !Pattern.matches(regexDate, newUser.getBirthday())) {
+            utilitieslLogger.error("Inappropriate json field value for birthday or newBirthday");
+            throw new ApplicationException("Inappropriate json field value for birthday or newBirthday", 415);
         }
         utilitieslLogger.info("Function validateUserFields has passed successfully");
     }

@@ -15,7 +15,7 @@ public class MysqlUtilities {
     private static Connection conn;
     private static Statement statmt;
     private static ResultSet resSet;
-//    private String query;
+    private static String sqlQuery;
 
     private static Connection connectToDatabase() throws ApplicationException {
         try {
@@ -42,7 +42,7 @@ public class MysqlUtilities {
         }
     }
 
-    public static TableUsers insertUser(TableUsers newUser) throws ApplicationException {
+    public static ResponseUserId insertUser(TableUsers newUser) throws ApplicationException {
         String name = newUser.getName();
         String surname = newUser.getSurname();
         String patronymic = newUser.getPatronymic();
@@ -53,14 +53,16 @@ public class MysqlUtilities {
             statmt = conn.createStatement();
             statmt.executeUpdate(String.format("INSERT INTO users (name, surname, patronymic, position, birthday) VALUES ('%s', '%s', '%s', '%s', '%s');", name, surname, patronymic, position, birthday));
             mysqlLogger.info(String.format("Пользователь успешно создан: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
+
         } catch (SQLException e) {
             mysqlLogger.error("Can't insert query in database", e);
             throw new ApplicationException("Can't insert query in database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }
-        TableUsers newUserFromDB = getUser(newUser);
-        return newUserFromDB; //TODO научить возвращать не весь класс, а только user_id
+        ResponseUserId respUserId = new ResponseUserId();
+        respUserId.setUser_id(getUser(newUser).getUser_id());
+        return respUserId;
     }
 
     public static TableUsers getUser(TableUsers userForSearching) throws ApplicationException {

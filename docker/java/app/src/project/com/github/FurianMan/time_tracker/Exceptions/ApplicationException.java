@@ -3,8 +3,7 @@ package com.github.FurianMan.time_tracker.Exceptions;
 import com.google.gson.annotations.Expose;
 
 public class ApplicationException extends Exception {
-    @Expose
-    private int httpCode;
+    @Expose private int httpCode;
 
     ApplicationException(String message) {
         super(message);
