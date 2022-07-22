@@ -1,0 +1,25 @@
+package com.github.FurianMan.time_tracker.MysqlUtilities;
+
+import com.github.FurianMan.time_tracker.Constants;
+import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
+import org.slf4j.Logger;
+
+import java.sql.*;
+
+
+public class MysqlTools {
+    private static final String driverName = Constants.getDriverName();
+    private static final String connectionString = Constants.getConnectionString();
+    private static final String login = Constants.getDbLogin();
+    private static final String password = Constants.getDbPassword();
+    private static final Logger mysqlLogger = Constants.getMysqlLogger();
+    private static Connection conn;
+    private static Statement statmt;
+    private static ResultSet resSet;
+    private static String sqlQuery;
+
+
+    public static void deleteUser () throws ApplicationException {
+
+    }
+}

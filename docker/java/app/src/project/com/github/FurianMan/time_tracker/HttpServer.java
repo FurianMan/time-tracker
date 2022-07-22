@@ -1,6 +1,9 @@
 package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.MysqlUtilities.GetUser;
+import com.github.FurianMan.time_tracker.MysqlUtilities.InsertUser;
+import com.github.FurianMan.time_tracker.MysqlUtilities.UpdateUser;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.sun.net.httpserver.HttpContext;
@@ -15,7 +18,8 @@ class MyHttpServer {
     private static String appVersion = Constants.getAppVersion();
     private static int serverPort = Constants.getServerPort();
     private static final Gson gsonUsers = new GsonBuilder()
-            .registerTypeAdapter(TableUsers.class, new Utilities.TableUsersDeserializer<TableUsers>())
+//            .registerTypeAdapter(TableUsers.class, new Utilities.TableUsersDeserializer<TableUsers>())
+//            .registerTypeAdapter(TableUsers.class, new Utilities.TableUsersDeserializer<TableUsers>())
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
                 public boolean shouldSkipField(FieldAttributes f) {
@@ -27,6 +31,30 @@ class MyHttpServer {
                     return false;
                 }
             })
+//            .addSerializationExclusionStrategy(new ExclusionStrategy() {
+//                @Override
+//                public boolean shouldSkipField(FieldAttributes f) {
+//                    Expose expose = f.getAnnotation(Expose.class);
+//                    return expose != null && !expose.serialize();
+//                }
+//
+//                @Override
+//                public boolean shouldSkipClass(Class<?> c) {
+//                    return false;
+//                }
+//            })
+//            .addDeserializationExclusionStrategy(new ExclusionStrategy() {
+//                @Override
+//                public boolean shouldSkipField(FieldAttributes f) {
+//                    Expose expose = f.getAnnotation(Expose.class);
+//                    return expose != null && !expose.deserialize();
+//                }
+//
+//                @Override
+//                public boolean shouldSkipClass(Class<?> c) {
+//                    return false;
+//                }
+//            })
             .create();
     private static final Gson gsonErrBody = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
@@ -79,8 +107,8 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForSearching = gsonUsers.fromJson(request, TableUsers.class);
-                    respText = gsonUsers.toJson((MysqlUtilities.getUser(userForSearching)));
+                    MysqlTables.TableUsers userForSearching = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    respText = gsonUsers.toJson((GetUser.getUser(userForSearching)));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
@@ -98,9 +126,9 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers newUser = gsonUsers.fromJson(request, TableUsers.class);
+                    MysqlTables.TableUsers newUser = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
                     Utilities.validateUserFields(newUser);
-                    respText = gsonUsers.toJson((MysqlUtilities.insertUser(newUser)));
+                    respText = gsonUsers.toJson((InsertUser.insertUser(newUser)));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
@@ -126,9 +154,9 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForUpdate = gsonUsers.fromJson(request, TableUsers.class);
+                    MysqlTables.TableUsers userForUpdate = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
                     Utilities.validateUserFields(userForUpdate);
-                    MysqlUtilities.updateUser(userForUpdate);
+                    UpdateUser.updateUser(userForUpdate);
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {

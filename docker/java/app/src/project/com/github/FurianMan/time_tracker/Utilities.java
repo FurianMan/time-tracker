@@ -43,7 +43,7 @@ public class Utilities {
      * Если во время валидации что-то идет не так, то выдаем исключение.
      * @param newUser - пользователь со значениями из http запроса.
     * */
-    public static void validateUserFields(TableUsers newUser) throws ApplicationException {
+    public static void validateUserFields(MysqlTables.TableUsers newUser) throws ApplicationException {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
         String regexDate = "([1-9][0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"; // дата формата 2023-12-31
         ArrayList<String> fieldsList = newUser.getValues();
@@ -64,28 +64,28 @@ public class Utilities {
         utilitieslLogger.info("Function validateUserFields has passed successfully");
     }
 
-    static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
-
-        public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-            T pojo = (T) new Gson().fromJson(je, type);
-
-            Field[] fields = pojo.getClass().getDeclaredFields();
-            for (java.lang.reflect.Field f : fields) {
-                if (f.getAnnotation(JsonRequired.class) != null) {
-                    try {
-                        f.setAccessible(true);
-                        if (f.get(pojo) == null) {
-                            throw new JsonParseException("Missing field in JSON: " + f.getName());
-                        }
-                    } catch (IllegalArgumentException e) {
-                        utilitieslLogger.error("Can't get class for database. No driver found", e);
-                    } catch (IllegalAccessException e) {
-                        utilitieslLogger.error("Can't get class for database. No driver found", e);
-                    }
-                }
-            }
-            return pojo;
-
-        }
-    }
+//    static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
+//
+//        public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+//            T pojo = (T) new Gson().fromJson(je, type);
+//
+//            Field[] fields = pojo.getClass().getDeclaredFields();
+//            for (java.lang.reflect.Field f : fields) {
+//                if (f.getAnnotation(JsonRequired.class) != null) {
+//                    try {
+//                        f.setAccessible(true);
+//                        if (f.get(pojo) == null) {
+//                            throw new JsonParseException("Missing field in JSON: " + f.getName());
+//                        }
+//                    } catch (IllegalArgumentException e) {
+//                        utilitieslLogger.error("Cannot get class for database. No driver found", e);
+//                    } catch (IllegalAccessException e) {
+//                        utilitieslLogger.error("Cannot get class for database. No driver found", e);
+//                    }
+//                }
+//            }
+//            return pojo;
+//
+//        }
+//    }
 }
