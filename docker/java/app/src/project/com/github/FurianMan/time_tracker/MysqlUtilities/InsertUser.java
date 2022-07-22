@@ -27,9 +27,9 @@ public class InsertUser {
         String patronymic = newUser.getPatronymic();
         String position = newUser.getPosition();
         String birthday = newUser.getBirthday();
-        if (name==null || surname==null || position==null || birthday==null) {
-            mysqlLogger.error("One or more required fields are empty in POST query, check fields: name, surname, position, birthday");
-            throw new ApplicationException("One or more required fields are empty in POST query, check fields: name, surname, position, birthday", 415);
+        if (name==null || surname==null || birthday==null) {
+            mysqlLogger.error("One or more required fields are empty in POST query, check fields: name, surname, birthday");
+            throw new ApplicationException("One or more required fields are empty in POST query, check fields: name, surname, birthday", 415);
         }
         conn = connectToDatabase();
         try {

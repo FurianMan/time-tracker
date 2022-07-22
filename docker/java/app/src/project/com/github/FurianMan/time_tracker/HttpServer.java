@@ -1,6 +1,7 @@
 package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.MysqlUtilities.DeleteUser;
 import com.github.FurianMan.time_tracker.MysqlUtilities.GetUser;
 import com.github.FurianMan.time_tracker.MysqlUtilities.InsertUser;
 import com.github.FurianMan.time_tracker.MysqlUtilities.UpdateUser;
@@ -170,11 +171,21 @@ class MyHttpServer {
 
 
             case "DELETE":
-                respText = "This is DELETE";
-                exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
-                output = exchange.getResponseBody();
-                output.write(respText.getBytes());
-                output.flush();
+                try {
+                    Utilities.checkContentType(exchange);
+                    String request = new String(exchange.getRequestBody().readAllBytes());
+                    MysqlTables.TableUsers userForDel = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    DeleteUser.deleteUser(userForDel);
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, -1);
+                } catch (ApplicationException e) {
+                    respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                }
 
             default:
                 exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed

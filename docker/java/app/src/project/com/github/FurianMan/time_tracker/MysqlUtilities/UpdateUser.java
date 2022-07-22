@@ -26,6 +26,11 @@ public class UpdateUser {
          * @param userForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
          * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
          * */
+        if (userForUpdate.getUser_id()==0 &&
+                (userForUpdate.getName()==null || userForUpdate.getSurname()==null || userForUpdate.getBirthday()==null)) {
+            mysqlLogger.error("Request does not have required fields for updating, please check documentation");
+            throw new ApplicationException("Can't update database user", 415);
+        }
         MysqlTables.TableUsers userDB = getUser(userForUpdate);
         int user_id = userDB.getUser_id();
         String name;

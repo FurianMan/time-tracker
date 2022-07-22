@@ -62,15 +62,15 @@ public class GetUser {
                 disconnectToDatabase(conn);
             }
             return userInstance;
-        } else if (name != null && surname != null && position != null && birthday != null) {
+        } else if (name != null && surname != null && birthday != null) {
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
-                sqlQuery = String.format("SELECT * FROM users WHERE name='%s' AND surname='%s' AND position='%s' AND birthday='%s';", name, surname, position, birthday);
+                sqlQuery = String.format("SELECT * FROM users WHERE name='%s' AND surname='%s' AND birthday='%s';", name, surname, birthday);
                 mysqlLogger.debug(sqlQuery);
                 resSet = statmt.executeQuery(sqlQuery);
                 if (!resSet.next()) {
-                    mysqlLogger.error(String.format("Can't find in database user: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
+                    mysqlLogger.error(String.format("Can't find in database user: name=%s, surname=%s, birthday=%s", name, surname, birthday));
                     throw new ApplicationException("Can't find user in database", 404);
                 } else {
                     do {
