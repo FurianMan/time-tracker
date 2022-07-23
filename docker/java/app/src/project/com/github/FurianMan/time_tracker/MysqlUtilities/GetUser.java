@@ -52,6 +52,7 @@ public class GetUser {
                         userInstance.setPatronymic(resSet.getString("patronymic"));
                         userInstance.setPosition(resSet.getString("position"));
                         userInstance.setBirthday(resSet.getString("birthday"));
+                        userInstance.setDateCreating(resSet.getString("date_creating"));
                     } while (resSet.next());
                 }
                 mysqlLogger.info(String.format("User has been found successfully: user_id=%d", user_id));
@@ -80,6 +81,7 @@ public class GetUser {
                         userInstance.setPatronymic(resSet.getString("patronymic"));
                         userInstance.setPosition(resSet.getString("position"));
                         userInstance.setBirthday(resSet.getString("birthday"));
+                        userInstance.setDateCreating(resSet.getString("date_creating"));
                     } while (resSet.next());
                 }
                 mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
@@ -108,6 +110,7 @@ public class GetUser {
                         userInstance.setPatronymic(resSet.getString("patronymic"));
                         userInstance.setPosition(resSet.getString("position"));
                         userInstance.setBirthday(resSet.getString("birthday"));
+                        userInstance.setDateCreating(resSet.getString("date_creating"));
                     } while (resSet.next());
                 }
                 mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s", name, surname));

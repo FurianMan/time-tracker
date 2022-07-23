@@ -7,6 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       LANG: C.UTF-8
+      TZ: Asia/Novosibirsk
     restart: always
     # ports:
     #   - "3308:3306"
@@ -21,6 +22,7 @@ services:
     container_name: time-tracker
     environment:
       APP_PORT: 6969
+      TZ: Asia/Novosibirsk
     ports:
       - "6969:6969"
     # volumes:

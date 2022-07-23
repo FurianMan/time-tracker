@@ -25,6 +25,7 @@ public class MysqlTables {
         private String position;
         //    @JsonRequired
         private String birthday;
+        private String dateCreating;
         private String newPatronymic;
         private String newName;
         private String newSurname;
@@ -32,21 +33,6 @@ public class MysqlTables {
         private String newBirthday;
         @Expose
         private final String tableDestination = "time_tracker.users";
-
-        TableUsers(String name, String surname, String patronymic, String position, String birthday) {
-            this.name = name;
-            this.surname = surname;
-            this.patronymic = patronymic;
-            this.position = position;
-            this.birthday = birthday;
-        }
-
-        TableUsers(String name, String surname, String position, String birthday) {
-            this.name = name;
-            this.surname = surname;
-            this.position = position;
-            this.birthday = birthday;
-        }
 
         public TableUsers() {
         }
@@ -141,6 +127,14 @@ public class MysqlTables {
 
         public void setUser_id(int user_id) {
             this.user_id = user_id;
+        }
+
+        public String getDateCreating() {
+            return dateCreating;
+        }
+
+        public void setDateCreating(String dateCreating) {
+            this.dateCreating = dateCreating;
         }
 
         public ArrayList<String> getValues() {
