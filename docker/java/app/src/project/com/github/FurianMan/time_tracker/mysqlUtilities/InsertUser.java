@@ -1,8 +1,9 @@
-package com.github.FurianMan.time_tracker.MysqlUtilities;
+package com.github.FurianMan.time_tracker.mysqlUtilities;
 
 import com.github.FurianMan.time_tracker.Constants;
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.MysqlTables;
+import com.github.FurianMan.time_tracker.ResponseUserId;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -10,9 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static com.github.FurianMan.time_tracker.MysqlUtilities.ConnectToDB.connectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.DisconnectToDB.disconnectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.GetUser.getUser;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class InsertUser {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
@@ -20,7 +21,7 @@ public class InsertUser {
     private static Statement statmt;
     private static ResultSet resSet;
     private static String sqlQuery;
-    public static MysqlTables.ResponseUserId insertUser(MysqlTables.TableUsers newUser) throws ApplicationException {
+    public static ResponseUserId insertUser(TableUsers newUser) throws ApplicationException {
         newUser.setUser_id(0); // нужно занулить, чтобы если пользователь укажет его, то мы по нему после не искали в getUser
         String name = newUser.getName();
         String surname = newUser.getSurname();
@@ -43,7 +44,7 @@ public class InsertUser {
         } finally {
             disconnectToDatabase(conn);
         }
-        MysqlTables.ResponseUserId respUserId = new MysqlTables.ResponseUserId();
+        ResponseUserId respUserId = new ResponseUserId();
         respUserId.setUser_id(getUser(newUser).getUser_id());
         return respUserId;
     }

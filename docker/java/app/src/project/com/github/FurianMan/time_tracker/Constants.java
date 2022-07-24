@@ -1,6 +1,6 @@
 package com.github.FurianMan.time_tracker;
 
-import com.github.FurianMan.time_tracker.MysqlUtilities.MysqlTools;
+import com.github.FurianMan.time_tracker.mysqlUtilities.MysqlTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +12,10 @@ public class Constants {
     private static final String connectionString = "jdbc:mysql://db:3306/time_tracker";
     private static final String dbLogin = "javauser";
     private static final String dbPassword = "javapassword";
-    private static String appVersion = "Time Tracker Version 0.1\n";
+    private static final String appVersion = "Time Tracker Version 0.1\n";
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON = "application/json; charset=UTF-8";
-    private static int serverPort = Integer.parseInt(Utilities.getConstants("APP_PORT"));
+    private static final int serverPort = Integer.parseInt(Utilities.getConstants("APP_PORT"));
 
     public static Logger getHttpServerLogger() {
         return httpServerLogger;

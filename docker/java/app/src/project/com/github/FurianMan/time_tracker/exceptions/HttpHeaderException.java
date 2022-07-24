@@ -1,4 +1,4 @@
-package com.github.FurianMan.time_tracker.Exceptions;
+package com.github.FurianMan.time_tracker.exceptions;
 
 public class HttpHeaderException extends ApplicationException {
     public HttpHeaderException(String message) {

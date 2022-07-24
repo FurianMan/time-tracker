@@ -1,13 +1,11 @@
-package com.github.FurianMan.time_tracker.MysqlUtilities;
+package com.github.FurianMan.time_tracker.mysqlUtilities;
 
 import com.github.FurianMan.time_tracker.Constants;
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class DisconnectToDB {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();

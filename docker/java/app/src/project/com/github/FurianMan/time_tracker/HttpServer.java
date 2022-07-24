@@ -1,10 +1,11 @@
 package com.github.FurianMan.time_tracker;
 
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.MysqlUtilities.DeleteUser;
-import com.github.FurianMan.time_tracker.MysqlUtilities.GetUser;
-import com.github.FurianMan.time_tracker.MysqlUtilities.InsertUser;
-import com.github.FurianMan.time_tracker.MysqlUtilities.UpdateUser;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
+import com.github.FurianMan.time_tracker.mysqlUtilities.DeleteUser;
+import com.github.FurianMan.time_tracker.mysqlUtilities.GetUser;
+import com.github.FurianMan.time_tracker.mysqlUtilities.InsertUser;
+import com.github.FurianMan.time_tracker.mysqlUtilities.UpdateUser;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.sun.net.httpserver.HttpContext;
@@ -108,7 +109,7 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    MysqlTables.TableUsers userForSearching = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    TableUsers userForSearching = gsonUsers.fromJson(request, TableUsers.class);
                     respText = gsonUsers.toJson((GetUser.getUser(userForSearching)));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
@@ -127,7 +128,7 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    MysqlTables.TableUsers newUser = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    TableUsers newUser = gsonUsers.fromJson(request, TableUsers.class);
                     Utilities.validateUserFields(newUser);
                     respText = gsonUsers.toJson((InsertUser.insertUser(newUser)));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
@@ -155,7 +156,7 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    MysqlTables.TableUsers userForUpdate = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    TableUsers userForUpdate = gsonUsers.fromJson(request, TableUsers.class);
                     Utilities.validateUserFields(userForUpdate);
                     UpdateUser.updateUser(userForUpdate);
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
@@ -174,7 +175,7 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    MysqlTables.TableUsers userForDel = gsonUsers.fromJson(request, MysqlTables.TableUsers.class);
+                    TableUsers userForDel = gsonUsers.fromJson(request, TableUsers.class);
                     DeleteUser.deleteUser(userForDel);
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, -1);

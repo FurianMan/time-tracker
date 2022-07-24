@@ -1,23 +1,23 @@
-package com.github.FurianMan.time_tracker.MysqlUtilities;
+package com.github.FurianMan.time_tracker.mysqlUtilities;
 
 import com.github.FurianMan.time_tracker.Constants;
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.MysqlTables;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static com.github.FurianMan.time_tracker.MysqlUtilities.ConnectToDB.connectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 
 public class DeleteUser {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
     private static Connection conn;
     private static Statement statmt;
 
-    public static void deleteUser(MysqlTables.TableUsers delUser) throws ApplicationException {
+    public static void deleteUser(TableUsers delUser) throws ApplicationException {
         int user_id = delUser.getUser_id();
         String name = delUser.getName();
         String surname = delUser.getSurname();

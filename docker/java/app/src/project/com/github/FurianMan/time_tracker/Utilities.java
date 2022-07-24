@@ -1,12 +1,10 @@
 package com.github.FurianMan.time_tracker;
 
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.Exceptions.ErrResponse;
-import com.google.gson.*;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.exceptions.ErrResponse;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import com.sun.net.httpserver.HttpExchange;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -43,9 +41,9 @@ public class Utilities {
      * Если во время валидации что-то идет не так, то выдаем исключение.
      * @param newUser - пользователь со значениями из http запроса.
     * */
-    public static void validateUserFields(MysqlTables.TableUsers newUser) throws ApplicationException {
+    public static void validateUserFields(TableUsers newUser) throws ApplicationException {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
-        String regexDate = "([1-9][0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])"; // дата формата 2023-12-31
+        String regexDate = "(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))"; // дата формата 2023-12-31
         ArrayList<String> fieldsList = newUser.getValues();
         for (String field : fieldsList) {
             if (field != null && !Pattern.matches(regexLetters, field)) {

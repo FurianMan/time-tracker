@@ -1,4 +1,4 @@
-package com.github.FurianMan.time_tracker.Exceptions;
+package com.github.FurianMan.time_tracker.exceptions;
 
 import com.google.gson.annotations.Expose;
 

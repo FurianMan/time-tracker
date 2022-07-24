@@ -1,8 +1,8 @@
-package com.github.FurianMan.time_tracker.MysqlUtilities;
+package com.github.FurianMan.time_tracker.mysqlUtilities;
 
 import com.github.FurianMan.time_tracker.Constants;
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.MysqlTables;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -10,9 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static com.github.FurianMan.time_tracker.MysqlUtilities.ConnectToDB.connectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.DisconnectToDB.disconnectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.GetUser.getUser;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class UpdateUser {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
@@ -20,18 +20,19 @@ public class UpdateUser {
     private static Statement statmt;
     private static ResultSet resSet;
     private static String sqlQuery;
-    public static void updateUser (MysqlTables.TableUsers userForUpdate) throws ApplicationException {
+    public static void updateUser (TableUsers userForUpdate) throws ApplicationException {
         /**
          * Перед изменением информации у пользователя, пытаемся его найти через метод getUser
          * @param userForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
          * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
+         * Изменить можно name, surname, patronymic, position, birthday.
          * */
         if (userForUpdate.getUser_id()==0 &&
                 (userForUpdate.getName()==null || userForUpdate.getSurname()==null || userForUpdate.getBirthday()==null)) {
             mysqlLogger.error("Request does not have required fields for updating, please check documentation");
             throw new ApplicationException("Can't update database user", 415);
         }
-        MysqlTables.TableUsers userDB = getUser(userForUpdate);
+        TableUsers userDB = getUser(userForUpdate);
         int user_id = userDB.getUser_id();
         String name;
         String surname;

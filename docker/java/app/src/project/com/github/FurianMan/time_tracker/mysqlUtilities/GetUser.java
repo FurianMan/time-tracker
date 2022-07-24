@@ -1,8 +1,8 @@
-package com.github.FurianMan.time_tracker.MysqlUtilities;
+package com.github.FurianMan.time_tracker.mysqlUtilities;
 
 import com.github.FurianMan.time_tracker.Constants;
-import com.github.FurianMan.time_tracker.Exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.MysqlTables;
+import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -10,8 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static com.github.FurianMan.time_tracker.MysqlUtilities.ConnectToDB.connectToDatabase;
-import static com.github.FurianMan.time_tracker.MysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 
 public class GetUser {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
@@ -26,14 +26,14 @@ public class GetUser {
      * Если ничего не подошло, то поднимаем исключение и информируемпользователя
      * @param userForSearching - передаем объект с данными пользователя
     * */
-    public static MysqlTables.TableUsers getUser(MysqlTables.TableUsers userForSearching) throws ApplicationException {
+    public static TableUsers getUser(TableUsers userForSearching) throws ApplicationException {
         int user_id = userForSearching.getUser_id();
         String name = userForSearching.getName();
         String surname = userForSearching.getSurname();
         String position = userForSearching.getPosition();
         String birthday = userForSearching.getBirthday();
         Connection conn;
-        MysqlTables.TableUsers userInstance = new MysqlTables.TableUsers();
+        TableUsers userInstance = new TableUsers();
         if (user_id != 0) {
             conn = connectToDatabase();
             try {
