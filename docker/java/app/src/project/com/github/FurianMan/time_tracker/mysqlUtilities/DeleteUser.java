@@ -16,6 +16,7 @@ public class DeleteUser {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
     private static Connection conn;
     private static Statement statmt;
+    private static String sqlQuery;
 
     public static void deleteUser(TableUsers delUser) throws ApplicationException {
         int user_id = delUser.getUser_id();
@@ -31,12 +32,14 @@ public class DeleteUser {
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
-                statmt.executeUpdate(String.format("DELETE FROM users WHERE user_id=%d;", user_id));
-                mysqlLogger.info(String.format("Пользователь успешно удален: user_id=%d", user_id));
+                sqlQuery = String.format("DELETE FROM users WHERE user_id=%d;", user_id);
+                mysqlLogger.debug(String.format(sqlQuery));
+                statmt.executeUpdate(sqlQuery);
+                mysqlLogger.info(String.format("User has been deleted successfully: user_id=%d", user_id));
 
             } catch (SQLException e) {
-                mysqlLogger.error("Can't insert query in database", e);
-                throw new ApplicationException("Can't insert query in database", e, 500);
+                mysqlLogger.error("Can't execute query 'deleteUser' in database", e);
+                throw new ApplicationException("Can't execute query 'deleteUser' in database", e, 500);
             } finally {
                 disconnectToDatabase(conn);
             }
@@ -44,12 +47,14 @@ public class DeleteUser {
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
-                statmt.executeUpdate(String.format("DELETE FROM users WHERE name='%s' AND surname='%s' AND birthday='%s';", name, surname, birthday));
-                mysqlLogger.info(String.format("Пользователь успешно удален: name=%s, surname=%s, birthday=%s", name, surname, birthday));
+                sqlQuery = String.format("DELETE FROM users WHERE name='%s' AND surname='%s' AND birthday='%s';", name, surname, birthday);
+                mysqlLogger.debug(String.format(sqlQuery));
+                statmt.executeUpdate(sqlQuery);
+                mysqlLogger.info(String.format("User has been deleted successfully: name=%s, surname=%s, birthday=%s", name, surname, birthday));
 
             } catch (SQLException e) {
-                mysqlLogger.error("Can't insert query in database", e);
-                throw new ApplicationException("Can't insert query in database", e, 500);
+                mysqlLogger.error("Can't execute query 'deleteUser' in database", e);
+                throw new ApplicationException("Can't execute query 'deleteUser' in database", e, 500);
             } finally {
                 disconnectToDatabase(conn);
             }

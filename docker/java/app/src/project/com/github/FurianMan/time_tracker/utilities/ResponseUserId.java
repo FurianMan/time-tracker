@@ -1,4 +1,4 @@
-package com.github.FurianMan.time_tracker;
+package com.github.FurianMan.time_tracker.utilities;
 
 public class ResponseUserId {
         private int user_id;

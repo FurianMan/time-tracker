@@ -1,11 +1,10 @@
 package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
+import com.github.FurianMan.time_tracker.mysqlTables.TableTasks;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
-import com.github.FurianMan.time_tracker.mysqlUtilities.DeleteUser;
-import com.github.FurianMan.time_tracker.mysqlUtilities.GetUser;
-import com.github.FurianMan.time_tracker.mysqlUtilities.InsertUser;
-import com.github.FurianMan.time_tracker.mysqlUtilities.UpdateUser;
+import com.github.FurianMan.time_tracker.mysqlUtilities.*;
+import com.github.FurianMan.time_tracker.utilities.Utilities;
 import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.sun.net.httpserver.HttpContext;
@@ -78,8 +77,12 @@ class MyHttpServer {
             com.sun.net.httpserver.HttpServer server = com.sun.net.httpserver.HttpServer.create(new InetSocketAddress(serverPort), 0);
             HttpContext contVer = server.createContext("/time-tracker/version");
             HttpContext contUser = server.createContext("/time-tracker/user");
+            HttpContext contWork = server.createContext("/time-tracker/user/work");
+            HttpContext contWorkStats = server.createContext("/time-tracker/user/work/stats");
             contVer.setHandler(MyHttpServer::handleRequestVersion);
             contUser.setHandler(MyHttpServer::handleRequestUser);
+            contWork.setHandler(MyHttpServer::handleRequestWork);
+            contWorkStats.setHandler(MyHttpServer::handleRequestWorkStats);
             server.start();
             httpServerLogger.info("HTTP Server has been started successfully");
         } catch (
@@ -171,6 +174,97 @@ class MyHttpServer {
                 }
 
 
+            case "DELETE":
+                try {
+                    Utilities.checkContentType(exchange);
+                    String request = new String(exchange.getRequestBody().readAllBytes());
+                    TableUsers userForDel = gsonUsers.fromJson(request, TableUsers.class);
+                    DeleteUser.deleteUser(userForDel);
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, -1);
+                } catch (ApplicationException e) {
+                    respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                }
+
+            default:
+                exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed
+        }
+        exchange.close();
+    }
+    static void handleRequestWork(HttpExchange exchange) throws IOException {
+        String respText;
+        OutputStream output;
+        switch (exchange.getRequestMethod()) {
+            case "POST":
+                try {
+                    Utilities.checkContentType(exchange);
+                    String request = new String(exchange.getRequestBody().readAllBytes());
+                    TableTasks newTask = gsonUsers.fromJson(request, TableTasks.class);
+                    respText = gsonUsers.toJson((InsertTask.insertTask(newTask)));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                } catch (ApplicationException e) {
+                    respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                }
+
+            case "PUT":
+                try {
+                    Utilities.checkContentType(exchange);
+                    String request = new String(exchange.getRequestBody().readAllBytes());
+                    TableTasks taskForUpdate = gsonUsers.fromJson(request, TableTasks.class);
+                    UpdateTask.updateTask(taskForUpdate);
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, -1);
+                } catch (ApplicationException e) {
+                    respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                }
+            default:
+                exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed
+        }
+        exchange.close();
+    }
+
+    static void handleRequestWorkStats(HttpExchange exchange) throws IOException {
+        String respText;
+        OutputStream output;
+        switch (exchange.getRequestMethod()) {
+            case "GET": //TODO сделать возможным поиск по любому параметру
+                try {
+                    Utilities.checkContentType(exchange);
+                    String request = new String(exchange.getRequestBody().readAllBytes());
+                    TableUsers userForSearching = gsonUsers.fromJson(request, TableUsers.class);
+                    respText = gsonUsers.toJson((GetUser.getUser(userForSearching)));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                } catch (ApplicationException e) {
+                    respText = gsonErrBody.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
+                    output = exchange.getResponseBody();
+                    output.write(respText.getBytes());
+                    output.flush();
+                }
             case "DELETE":
                 try {
                     Utilities.checkContentType(exchange);

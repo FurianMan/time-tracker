@@ -1,5 +1,6 @@
-package com.github.FurianMan.time_tracker;
+package com.github.FurianMan.time_tracker.utilities;
 
+import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.exceptions.ErrResponse;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
@@ -12,7 +13,7 @@ public class Utilities {
     static private Map<String, String> env = System.getenv();
     private static final org.slf4j.Logger utilitieslLogger = Constants.getUtilitieslLogger();
 
-    static String getConstants(String keyName) {
+    public static String getConstants(String keyName) {
         return env.get(keyName);
     }
 

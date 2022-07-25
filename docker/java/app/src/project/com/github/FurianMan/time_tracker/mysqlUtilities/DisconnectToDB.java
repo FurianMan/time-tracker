@@ -17,5 +17,6 @@ public class DisconnectToDB {
             mysqlLogger.error("Can't close connection to database", e);
             throw new ApplicationException("Can't close connection to database", e, 500);
         }
+        mysqlLogger.info("Connection to database has been closed successfully");
     }
 }

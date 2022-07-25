@@ -1,12 +1,13 @@
 package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.mysqlUtilities.MysqlTools;
+import com.github.FurianMan.time_tracker.utilities.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Constants {
     private static final Logger httpServerLogger = LoggerFactory.getLogger(MyHttpServer.class);
-    private static final Logger mysqlLogger = LoggerFactory.getLogger(MysqlTools.class);
+    private static final Logger mysqlLogger = LoggerFactory.getLogger(MysqlTools.class); //TODO надо переделать на другие классы
     private static final Logger utilitieslLogger = LoggerFactory.getLogger(Utilities.class);
     private static final String driverName = "com.mysql.cj.jdbc.Driver";
     private static final String connectionString = "jdbc:mysql://db:3306/time_tracker";

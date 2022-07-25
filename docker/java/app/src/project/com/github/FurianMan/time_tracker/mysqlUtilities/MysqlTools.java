@@ -19,7 +19,7 @@ public class MysqlTools {
     private static String sqlQuery;
 
 
-    public static void deleteUser () throws ApplicationException {
+    public static void deleteUser() throws ApplicationException {
 
     }
 }

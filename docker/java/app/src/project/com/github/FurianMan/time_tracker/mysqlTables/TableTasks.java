@@ -1,6 +1,7 @@
 package com.github.FurianMan.time_tracker.mysqlTables;
 
 public class TableTasks {
+    private int task_id;
 
     private int task_num;
 
@@ -8,6 +9,13 @@ public class TableTasks {
     private String end_time;
     private int user_id;
 
+    public int getTask_id() {
+        return task_id;
+    }
+
+    public void setTask_id(int task_id) {
+        this.task_id = task_id;
+    }
     public void setTask_num(int task_num) {
         this.task_num = task_num;
     }
