@@ -12,7 +12,6 @@ public class ConnectToDB {
     private static final String login = Constants.getDbLogin();
     private static final String password = Constants.getDbPassword();
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
-    private static Connection conn;
 
     static Connection connectToDatabase() throws ApplicationException {
         try {
@@ -21,6 +20,7 @@ public class ConnectToDB {
             mysqlLogger.error("Can't get class for database. No driver found", e);
             throw new ApplicationException("Can't get class for database. No driver found", e, 500);
         }
+        Connection conn;
         try {
             conn = DriverManager.getConnection(connectionString, login, password);
         } catch (SQLException e) {
