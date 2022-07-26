@@ -4,6 +4,7 @@ import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.exceptions.ErrResponse;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
+import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsSum;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.util.*;
@@ -44,9 +45,9 @@ public class Utilities {
     * */
     public static void validateUserFields(TableUsers newUser) throws ApplicationException {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
-        String regexDate = "(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))"; // дата формата 2023-12-31
+        String regexDate = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))$"; // дата формата 2023-12-31
         ArrayList<String> fieldsList = newUser.getValues();
-        for (String field : fieldsList) {
+        for (String field : fieldsList) {//TODO переделать на словарь, чтобы в дебаге было видно не только значения
             if (field != null && !Pattern.matches(regexLetters, field)) {
                 utilitieslLogger.error(String.format("Inappropriate json field value: %s", field));
                 throw new ApplicationException(String.format("Inappropriate json field value: %s", field), 415);
@@ -62,29 +63,42 @@ public class Utilities {
         }
         utilitieslLogger.info("Function validateUserFields has passed successfully");
     }
+    /**
+     * Метод валидации полей для получения статистики, которые указал пользователь.
+     * Для валидации используются регулярные выражения.
+     * Условия прохождения валидации:
+     * 1 - поля  start_time и end_time не пустые
+     * 2 - эти же поля проходят регулярку, формат 2022-12-31 23:59:59
+     * Если во время валидации что-то идет не так, то выдаем исключение.
+     * @param reqForGettingStats - пользователь со значениями из http запроса.
+     * */
+    public static void validateDateTime(RequestUserStats reqForGettingStats) throws ApplicationException {
+        String start_time = reqForGettingStats.getStart_time();
+        String end_time = reqForGettingStats.getEnd_time();
+        String regexDateTime = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))" +
+                "-((0[1-9])|([12][0-9])|(3[01]))) ([0-1]\\d|2[0-3])(:[0-5]\\d){2}$";
 
-//    static class TableUsersDeserializer<T> implements JsonDeserializer<T> {
-//
-//        public T deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-//            T pojo = (T) new Gson().fromJson(je, type);
-//
-//            Field[] fields = pojo.getClass().getDeclaredFields();
-//            for (java.lang.reflect.Field f : fields) {
-//                if (f.getAnnotation(JsonRequired.class) != null) {
-//                    try {
-//                        f.setAccessible(true);
-//                        if (f.get(pojo) == null) {
-//                            throw new JsonParseException("Missing field in JSON: " + f.getName());
-//                        }
-//                    } catch (IllegalArgumentException e) {
-//                        utilitieslLogger.error("Cannot get class for database. No driver found", e);
-//                    } catch (IllegalAccessException e) {
-//                        utilitieslLogger.error("Cannot get class for database. No driver found", e);
-//                    }
-//                }
-//            }
-//            return pojo;
-//
-//        }
-//    }
+        if (start_time == null || end_time == null) {
+            utilitieslLogger.error("start_time or end_time must not be empty!");
+            throw new ApplicationException("start_time or end_time must not be empty!", 415);
+        }
+        if (!Pattern.matches(regexDateTime, start_time) || !Pattern.matches(regexDateTime, end_time)) {
+            utilitieslLogger.error("Inappropriate json value for fields start_time or end_time, please check documentation");
+            throw new ApplicationException("Inappropriate json value for fields start_time or end_time, please check documentation", 415);
+        }
+    }
+
+    /**
+     * Метод для перенаправления на сбор статистики
+     * в зависимости от значения mode
+    * */
+    public static ResponseStats defineWayToGetStats (RequestUserStats reqData) throws ApplicationException {
+        String mode = reqData.getMode().toLowerCase();
+        if (mode.equals("sum")) {
+            return GetWorkStatsSum.getWorkStatsSum(reqData);
+        } else {
+            utilitieslLogger.error("Inappropriate json value for field mode, please check documentation");
+            throw new ApplicationException("Inappropriate json value for field mode, please check documentation", 415);
+        }
+    }
 }

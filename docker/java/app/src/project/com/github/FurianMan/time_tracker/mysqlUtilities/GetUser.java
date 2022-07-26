@@ -19,7 +19,7 @@ public class GetUser {
     /**
      * Ищем user в БД, доступны 3 варианта поиска
      * 1 - по полю user_id
-     * 2 - по полям name,surname,position,birthday.
+     * 2 - по полям name,surname,patronymic,birthday.
      * 3 - по полям name surname. Если записей больше, чем 1, то вернем последнего созданного
      * Если ничего не подошло, то поднимаем исключение и информируемпользователя
      *
@@ -29,7 +29,7 @@ public class GetUser {
         int user_id = userForSearch.getUser_id();
         String name = userForSearch.getName();
         String surname = userForSearch.getSurname();
-        String position = userForSearch.getPosition();
+        String patronymic = userForSearch.getPatronymic();
         String birthday = userForSearch.getBirthday();
         Connection conn;
         TableUsers userInstance = new TableUsers();
@@ -86,7 +86,7 @@ public class GetUser {
                         userInstance.setDateCreating(resSet.getString("date_creating"));
                     } while (resSet.next());
                 }
-                mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
+                mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, patronymic=%s, birthday=%s", name, surname, patronymic, birthday));
             } catch (SQLException e) {
                 mysqlLogger.error("Can't execute query 'getUser' to database", e);
                 throw new ApplicationException("Can't execute query 'getUser' to database", e, 500);

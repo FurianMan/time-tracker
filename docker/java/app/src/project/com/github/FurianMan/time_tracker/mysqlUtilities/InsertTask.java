@@ -32,8 +32,8 @@ public class InsertTask {//TODO сделать проверку, что нет �
         String start_time = newTask.getStart_time();
 
         if (user_id == 0 && task_num == 0) {
-            mysqlLogger.error("Request does not have required fields for insert, please check documentation");
-            throw new ApplicationException("Can't insert task to database", 415);
+            mysqlLogger.error("Request does not have required fields for 'insertTask', please check documentation");
+            throw new ApplicationException("Request does not have required fields for 'insertTask'. Can't execute query to database", 415);
         }
         // проверяем существует ли уже такая открытая задача
         CheckTask.checkOpenTaskErr(newTask);
