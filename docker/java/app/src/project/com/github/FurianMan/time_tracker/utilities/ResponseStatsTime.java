@@ -1,17 +1,21 @@
 package com.github.FurianMan.time_tracker.utilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ResponseStatsTime {
-    private int task_num;
-    private String duration;
+    private int user_id;
+    private List<TimeStats> allTimeStats = new LinkedList<>();
 
-    public void setTask_num(int task_num) {
-        this.task_num = task_num;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public void addStats(TimeStats timeStats) {
+        this.allTimeStats.add(timeStats);
     }
 }

@@ -250,8 +250,8 @@ class MyHttpServer {
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForSearching = gsonUsers.fromJson(request, TableUsers.class);
-                    respText = gsonUsers.toJson((GetUser.getUser(userForSearching)));
+                    TableTasks taskForSearchStats = gsonUsers.fromJson(request, TableTasks.class);
+                    respText = gsonUsers.toJson(GetWorkStats.getWorkStats(taskForSearchStats));
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
