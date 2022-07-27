@@ -6,5 +6,8 @@ public abstract class ResponseStats {
 
     public abstract void setUser_id(int user_id);
 
-    public abstract void addStats(TimeStats timeStats);
+    public abstract void addStats(TimeStatsSum timeStatsSum);
+    public abstract void addStats(TimeStatsPeriod timeStatsPeriod);
+
+
 }

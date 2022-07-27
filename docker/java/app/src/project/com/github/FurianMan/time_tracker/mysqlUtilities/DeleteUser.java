@@ -18,14 +18,23 @@ public class DeleteUser {
     private static Statement statmt;
     private static String sqlQuery;
 
+    /**
+     * Метод предназначен для удаления пользователя
+     * Удалить можно следующими способами
+     * 1 - по user_id
+     * 2 - по name,surname,birthday,position. Эта связка является уникальной на бд
+     * Если удалить не получилось - поднимаем исключение
+     * @param delUser - данные из запроса от пользователя упакованные в класс
+     * */
     public static void deleteUser(TableUsers delUser) throws ApplicationException {
         int user_id = delUser.getUser_id();
         String name = delUser.getName();
         String surname = delUser.getSurname();
         String birthday = delUser.getBirthday();
-        if (delUser.getUser_id() == 0 &&
-                (delUser.getName() == null || delUser.getSurname() == null || delUser.getBirthday() == null)) {
-            mysqlLogger.error("Request does not have required fields for updating, please check documentation");
+        String position = delUser.getPosition();
+        if (user_id == 0 &&
+                (name == null || surname == null || birthday == null || position == null)) {
+            mysqlLogger.error("Request does not have required fields for deleting, please check documentation");
             throw new ApplicationException("Can't delete user from database", 415);
         }
         if (delUser.getUser_id() != 0) {
@@ -47,10 +56,10 @@ public class DeleteUser {
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
-                sqlQuery = String.format("DELETE FROM users WHERE name='%s' AND surname='%s' AND birthday='%s';", name, surname, birthday);
+                sqlQuery = String.format("DELETE FROM users WHERE name='%s' AND surname='%s' AND position='%s' AND birthday='%s';", name, surname, position, birthday);
                 mysqlLogger.debug(String.format(sqlQuery));
                 statmt.executeUpdate(sqlQuery);
-                mysqlLogger.info(String.format("User has been deleted successfully: name=%s, surname=%s, birthday=%s", name, surname, birthday));
+                mysqlLogger.info(String.format("User has been deleted successfully: name=%s, surname=%s, position=%s birthday=%s", name, surname, position, birthday));
 
             } catch (SQLException e) {
                 mysqlLogger.error("Can't execute query 'deleteUser' in database", e);

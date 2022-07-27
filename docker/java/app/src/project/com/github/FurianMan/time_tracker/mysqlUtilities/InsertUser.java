@@ -31,7 +31,7 @@ public class InsertUser {
         Connection conn = connectToDatabase();
         try {
             Statement statmt = conn.createStatement();
-            String sqlQuery = (String.format("INSERT INTO users (name, surname, patronymic, position, birthday) VALUES ('%s', '%s', '%s', '%s', '%s');", name, surname, patronymic, position, birthday));
+            String sqlQuery = (String.format("INSERT INTO users (name, surname, patronymic, position, birthday) VALUES ('%s', '%s', %s, '%s', '%s');", name, surname, patronymic, position, birthday));
             mysqlLogger.debug(sqlQuery);
             statmt.executeUpdate(sqlQuery);
             mysqlLogger.info(String.format("User has been created successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));

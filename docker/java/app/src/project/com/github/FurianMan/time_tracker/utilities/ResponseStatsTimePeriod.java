@@ -3,9 +3,9 @@ package com.github.FurianMan.time_tracker.utilities;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ResponseStatsTimeSum extends ResponseStats {
+public class ResponseStatsTimePeriod extends ResponseStats {
     private int user_id;
-    private List<TimeStatsSum> timeStatsSum = new LinkedList<>();
+    private List<TimeStatsPeriod> timeStatsPeriods = new LinkedList<TimeStatsPeriod>();
 
     @Override
     public int getUser_id() {
@@ -15,12 +15,13 @@ public class ResponseStatsTimeSum extends ResponseStats {
     public void setUser_id(int user_id) {
         this.user_id = user_id;
     }
-    @Override
-    public void addStats(TimeStatsSum timeStatsSum) {
-        this.timeStatsSum.add(timeStatsSum);
-    }
 
     @Override
     // Этот метод тут не нужен...
-    public void addStats(TimeStatsPeriod timeStatsPeriod) {return;}
+    public void addStats(TimeStatsSum timeStatsSum) {return;}
+
+    @Override
+    public void addStats(TimeStatsPeriod timeStatsPeriod) {
+        this.timeStatsPeriods.add(timeStatsPeriod);
+    }
 }

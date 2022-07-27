@@ -4,11 +4,15 @@ import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.exceptions.ErrResponse;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
+import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsOneline;
+import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsPeriod;
 import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsSum;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class Utilities {
     static private Map<String, String> env = System.getenv();
@@ -36,13 +40,15 @@ public class Utilities {
         ErrResponse bodyInstance = new ErrResponse(message);
         return bodyInstance;
     }
+
     /**
      * Метод валидации полей для таблицы users, которые указал пользователь.
      * Для валидации используются регулярные выражения. Строки ограничены размером в 255 символа.
      * Ограничение идет от mysql.
      * Если во время валидации что-то идет не так, то выдаем исключение.
+     *
      * @param newUser - пользователь со значениями из http запроса.
-    * */
+     */
     public static void validateUserFields(TableUsers newUser) throws ApplicationException {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
         String regexDate = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))$"; // дата формата 2023-12-31
@@ -52,17 +58,18 @@ public class Utilities {
                 utilitieslLogger.error(String.format("Inappropriate json field value: %s", field));
                 throw new ApplicationException(String.format("Inappropriate json field value: %s", field), 415);
             }
-            utilitieslLogger.debug("Поля прошло валидацию: " + field);
+            utilitieslLogger.debug("Field has been validated successfully: " + field);
         }
         /*
-        * Дату проверяем отдельно, а т.к. их может быть две (вторая используется для update), то приходится проверять обе
-        * */
+         * Дату проверяем отдельно, а т.к. их может быть две (вторая используется для update), то приходится проверять обе
+         * */
         if (newUser.getNewBirthday() != null && !Pattern.matches(regexDate, newUser.getNewBirthday()) && !Pattern.matches(regexDate, newUser.getBirthday())) {
             utilitieslLogger.error("Inappropriate json field value for birthday or newBirthday");
             throw new ApplicationException("Inappropriate json field value for birthday or newBirthday", 415);
         }
         utilitieslLogger.info("Function validateUserFields has passed successfully");
     }
+
     /**
      * Метод валидации полей для получения статистики, которые указал пользователь.
      * Для валидации используются регулярные выражения.
@@ -70,8 +77,9 @@ public class Utilities {
      * 1 - поля  start_time и end_time не пустые
      * 2 - эти же поля проходят регулярку, формат 2022-12-31 23:59:59
      * Если во время валидации что-то идет не так, то выдаем исключение.
+     *
      * @param reqForGettingStats - пользователь со значениями из http запроса.
-     * */
+     */
     public static void validateDateTime(RequestUserStats reqForGettingStats) throws ApplicationException {
         String start_time = reqForGettingStats.getStart_time();
         String end_time = reqForGettingStats.getEnd_time();
@@ -86,16 +94,40 @@ public class Utilities {
             utilitieslLogger.error("Inappropriate json value for fields start_time or end_time, please check documentation");
             throw new ApplicationException("Inappropriate json value for fields start_time or end_time, please check documentation", 415);
         }
+        utilitieslLogger.info("Validation of start_time and end_time has been passed successfully");
     }
 
     /**
      * Метод для перенаправления на сбор статистики
      * в зависимости от значения mode
-    * */
-    public static ResponseStats defineWayToGetStats (RequestUserStats reqData) throws ApplicationException {
-        String mode = reqData.getMode().toLowerCase();
-        if (mode.equals("sum")) {
+     * Проверка на существование пользователя будет тут, т.к.
+     * для всех методов ниже нужен пользователь
+     */
+    public static ResponseStats defineWayToGetStats(RequestUserStats reqData) throws ApplicationException {
+        String mode = reqData.getMode();
+        int user_id = reqData.getUser_id();
+
+        if (user_id == 0) {
+            utilitieslLogger.error("In request of getting stats user_id must not be equal 0");
+            throw new ApplicationException("In request of getting stats user_id must not be equal 0", 415);
+        }
+
+        /*
+         * Создаем класс пользователя и проверяем его существавание в db
+         * */
+        TableUsers userDB = new TableUsers();
+        userDB.setUser_id(user_id);
+        getUser(userDB);
+
+        if ("sum".equals(mode)) {
+            utilitieslLogger.info("In query of getting stats has been found mode=sum");
             return GetWorkStatsSum.getWorkStatsSum(reqData);
+        } else if ("oneline".equals(mode)) {
+            utilitieslLogger.info("In query of getting stats has been found mode=all");
+            return GetWorkStatsOneline.getWorkStatsOneline(reqData);
+        } else if ("period".equals(mode)) {
+            utilitieslLogger.info("In query of getting stats has been found mode=period");
+            return GetWorkStatsPeriod.getWorkStatsPeriod(reqData);
         } else {
             utilitieslLogger.error("Inappropriate json value for field mode, please check documentation");
             throw new ApplicationException("Inappropriate json value for field mode, please check documentation", 415);

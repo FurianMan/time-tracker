@@ -32,19 +32,6 @@ class MyHttpServer {
                 }
             })
             .create();
-//    private static final Gson gsonErrBody = new GsonBuilder()
-//            .setExclusionStrategies(new ExclusionStrategy() {
-//                @Override
-//                public boolean shouldSkipField(FieldAttributes f) {
-//                    return f.getAnnotation(Expose.class) != null;
-//                }
-//
-//                @Override
-//                public boolean shouldSkipClass(Class<?> c) {
-//                    return false;
-//                }
-//            })
-//            .create();
     private static final Logger httpServerLogger = Constants.getHttpServerLogger();
 
     static void startServer() {
@@ -241,12 +228,20 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 }
+//                } catch (UnexpectedErr e) {
+//                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+//                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+//                    exchange.sendResponseHeaders(500, respText.getBytes(StandardCharsets.UTF_8).length);
+//                    output = exchange.getResponseBody();
+//                    output.write(respText.getBytes());
+//                    output.flush();
+//                }
             case "DELETE":
                 try {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForDel = gson.fromJson(request, TableUsers.class);
-                    DeleteUser.deleteUser(userForDel);
+                    TableTasks clearStats = gson.fromJson(request, TableTasks.class);
+                    ClearStats.clearUserStats(clearStats);
                     exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {

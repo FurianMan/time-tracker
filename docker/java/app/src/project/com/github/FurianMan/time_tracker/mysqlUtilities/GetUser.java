@@ -29,7 +29,7 @@ public class GetUser {
         int user_id = userForSearch.getUser_id();
         String name = userForSearch.getName();
         String surname = userForSearch.getSurname();
-        String patronymic = userForSearch.getPatronymic();
+        String position = userForSearch.getPosition();
         String birthday = userForSearch.getBirthday();
         Connection conn;
         TableUsers userInstance = new TableUsers();
@@ -65,15 +65,15 @@ public class GetUser {
                 disconnectToDatabase(conn);
             }
             return userInstance;
-        } else if (name != null && surname != null && birthday != null) {
+        } else if (name != null && surname != null && birthday != null && position != null) {
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
-                sqlQuery = String.format("SELECT * FROM users WHERE name='%s' AND surname='%s' AND birthday='%s';", name, surname, birthday);
+                sqlQuery = String.format("SELECT * FROM users WHERE name='%s' AND surname='%s' AND position='%s' AND birthday='%s';", name, surname, position, birthday);
                 mysqlLogger.debug(sqlQuery);
                 resSet = statmt.executeQuery(sqlQuery);
                 if (!resSet.next()) {
-                    mysqlLogger.error(String.format("Can't find in database user: name=%s, surname=%s, birthday=%s", name, surname, birthday));
+                    mysqlLogger.error(String.format("Can't find in database user: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
                     throw new ApplicationException("Can't find the user in database", 404);
                 } else {
                     do {
@@ -86,7 +86,7 @@ public class GetUser {
                         userInstance.setDateCreating(resSet.getString("date_creating"));
                     } while (resSet.next());
                 }
-                mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, patronymic=%s, birthday=%s", name, surname, patronymic, birthday));
+                mysqlLogger.info(String.format("User has been found successfully: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
             } catch (SQLException e) {
                 mysqlLogger.error("Can't execute query 'getUser' to database", e);
                 throw new ApplicationException("Can't execute query 'getUser' to database", e, 500);

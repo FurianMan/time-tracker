@@ -1,11 +1,8 @@
 package com.github.FurianMan.time_tracker.utilities;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class ResponseStatsTimeSum extends ResponseStats {
+public class ResponseStatsTimeOneline extends ResponseStats {
     private int user_id;
-    private List<TimeStatsSum> timeStatsSum = new LinkedList<>();
+    private String timeStatsAll;
 
     @Override
     public int getUser_id() {
@@ -16,11 +13,18 @@ public class ResponseStatsTimeSum extends ResponseStats {
         this.user_id = user_id;
     }
     @Override
-    public void addStats(TimeStatsSum timeStatsSum) {
-        this.timeStatsSum.add(timeStatsSum);
-    }
+    // Этот метод тут не нужен...
+    public void addStats(TimeStatsSum timeStatsSum) {return;}
 
     @Override
     // Этот метод тут не нужен...
     public void addStats(TimeStatsPeriod timeStatsPeriod) {return;}
+
+    public String getTimeStatsAll() {
+        return timeStatsAll;
+    }
+
+    public void setTimeStatsAll(String timeStatsAll) {
+        this.timeStatsAll = timeStatsAll;
+    }
 }

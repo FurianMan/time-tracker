@@ -59,19 +59,20 @@ public class CheckTask {
      */
     public static void checkOpenTask(TableTasks taskForCheck) throws ApplicationException {
         int task_id = taskForCheck.getTask_id();
+        int user_id = taskForCheck.getUser_id();
 
         Connection conn;
         conn = connectToDatabase();
         try {
             statmt = conn.createStatement();
-            sqlQuery = (String.format("SELECT * FROM tasks WHERE task_id=%d AND end_time IS NULL;", task_id));
+            sqlQuery = (String.format("SELECT * FROM tasks WHERE user_id=%d AND task_id=%d AND end_time IS NULL;", user_id, task_id));
             mysqlLogger.debug(String.format(sqlQuery));
             resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("The task is not exists: task_id=%d", task_id));
-                throw new ApplicationException(String.format("The task is not exists: task_id=%d", task_id), 404);
+                mysqlLogger.error(String.format("The task is not exists: task_id=%d user_id= %d", task_id, user_id));
+                throw new ApplicationException(String.format("The task is not exists: task_id=%d user_id= %d", task_id, user_id), 404);
             }
-            mysqlLogger.info(String.format("The task with task_id=%d has been found successfully", task_id));
+            mysqlLogger.info(String.format("The task with task_id=%d and user_id= %d has been found successfully", task_id, user_id));
         } catch (SQLException e) {
             mysqlLogger.error("Can't execute query 'checkOpenTask' to database", e);
             throw new ApplicationException("Can't execute query 'checkOpenTask' to database", e, 500);
@@ -87,19 +88,20 @@ public class CheckTask {
      */
     public static void checkCloseTask(TableTasks taskForCheck) throws ApplicationException {
         int task_id = taskForCheck.getTask_id();
+        int user_id = taskForCheck.getUser_id();
 
         Connection conn;
         conn = connectToDatabase();
         try {
             statmt = conn.createStatement();
-            sqlQuery = (String.format("SELECT * FROM tasks WHERE task_id=%d AND end_time IS NOT NULL;", task_id));
+            sqlQuery = (String.format("SELECT * FROM tasks WHERE user_id=%d AND task_id=%d AND end_time IS NOT NULL;", user_id, task_id));
             mysqlLogger.debug(String.format(sqlQuery));
             resSet = statmt.executeQuery(sqlQuery);
             if (resSet.next()) {
-                mysqlLogger.error(String.format("The task already closed: task_id=%d", task_id));
-                throw new ApplicationException(String.format("The task already closed: task_id=%d", task_id), 404);
+                mysqlLogger.error(String.format("The task already closed: task_id=%d user_id=%d", task_id, user_id));
+                throw new ApplicationException(String.format("The task already closed: task_id=%d user_id=%d", task_id, user_id), 404);
             }
-            mysqlLogger.info(String.format("The opened task with task_id=%d has been found successfully", task_id));
+            mysqlLogger.info(String.format("The opened task with task_id=%d and user_id=%d has been found successfully", task_id, user_id));
         } catch (SQLException e) {
             mysqlLogger.error("Can't execute query 'checkCloseTask' to database", e);
             throw new ApplicationException("Can't execute query 'checkCloseTask' to database", e, 500);

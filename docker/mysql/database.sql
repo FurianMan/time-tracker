@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS time_tracker.users(
     position VARCHAR(30) NOT NULL,
     birthday DATE NOT NULL,
     date_creating DATETIME,
-    UNIQUE (name,surname,patronymic,birthday)
+    UNIQUE (name,surname,position,birthday)
 );
 CREATE TABLE IF NOT EXISTS time_tracker.tasks(
 	task_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,

@@ -3,6 +3,7 @@ package com.github.FurianMan.time_tracker.mysqlUtilities;
 import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.mysqlTables.TableTasks;
+import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class UpdateTask {
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
@@ -25,7 +27,10 @@ public class UpdateTask {
          * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
          * Изменить можно name, surname, patronymic, position, birthday.
          * */
-        if (taskForUpdate.getTask_id() == 0) {
+        int user_id = taskForUpdate.getUser_id();
+        int task_id = taskForUpdate.getTask_id();
+
+        if (task_id == 0 || user_id == 0) {
             mysqlLogger.error("One required fields are empty in PUT query, check field: task_id");
             throw new ApplicationException("One required fields are empty in PUT query, check field: task_id", 415);
         }
@@ -33,7 +38,13 @@ public class UpdateTask {
         Date date = new Date();
         taskForUpdate.setEnd_time(dateFormat.format(date));
         String end_time = taskForUpdate.getEnd_time();
-        int task_id = taskForUpdate.getTask_id();
+
+         /*
+        Создаем класс пользователя и проверяем его существавание в db
+        * */
+        TableUsers userDB = new TableUsers();
+        userDB.setUser_id(user_id);
+        getUser(userDB);
 
         /*
         * Проверяем закрыт ли уже трекинг по задаче,

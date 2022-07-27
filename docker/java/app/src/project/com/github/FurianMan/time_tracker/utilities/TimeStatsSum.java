@@ -1,6 +1,6 @@
 package com.github.FurianMan.time_tracker.utilities;
 
-public class TimeStats {
+public class TimeStatsSum {
     private int task_num;
     private String duration;
 
