@@ -48,7 +48,7 @@ public class GetWorkStatsOneline {
         conn = connectToDatabase();
         try {
             Statement statmt = conn.createStatement();
-            String sqlQuery = (String.format("SELECT task_num, TIME_FORMAT(timediff(end_time, start_time), '%%H:%%i') AS 'Duration'" +
+            String sqlQuery = (String.format("SELECT user_id, SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)) AS 'Duration' " +
                     "FROM (" +
                     "  SELECT * " +
                     "  from tasks " +
@@ -63,16 +63,13 @@ public class GetWorkStatsOneline {
                 throw new ApplicationException("Can't find stats in database", 404);
             } else {
                 do {
-                    TimeStatsSum timeStatsSumPeerTask = new TimeStatsSum();
-                    timeStatsSumPeerTask.setTask_num(resSet.getInt("task_num"));
-                    timeStatsSumPeerTask.setDuration(resSet.getString("Duration"));
-                    respStats.addStats(timeStatsSumPeerTask);
+                    respStats.setTimeStatsAll(resSet.getInt("Duration"));
                 } while (resSet.next());
             }
             mysqlLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'getWorkStats' to database", e);
-            throw new ApplicationException("Can't execute query 'getWorkStats' to database", e, 500);
+            mysqlLogger.error("Can't execute query 'getWorkStatsOneline' to database", e);
+            throw new ApplicationException("Can't execute query 'getWorkStatsOneline' to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

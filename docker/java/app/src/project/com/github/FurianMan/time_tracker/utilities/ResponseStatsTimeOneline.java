@@ -24,7 +24,32 @@ public class ResponseStatsTimeOneline extends ResponseStats {
         return timeStatsAll;
     }
 
-    public void setTimeStatsAll(String timeStatsAll) {
-        this.timeStatsAll = timeStatsAll;
+    /**
+     * Метод конвертации минут в формат hh:mm
+     * Получаем данные из БД в минутах.
+     * Эти минуты из бд - время затраченное на все задачи
+     * в течение какого-то периода
+     * */
+    public void setTimeStatsAll(int timeStatsAll) {
+        String newHours;
+        String newMinutes;
+
+        if ( timeStatsAll == 0) {
+            this.timeStatsAll = "00:00";
+            System.out.println(this.timeStatsAll);
+            return;
+        } else if (timeStatsAll / 60 < 10){
+            newHours = '0' + String.valueOf(timeStatsAll/60);
+        } else {
+            newHours = String.valueOf(timeStatsAll/60);
+        }
+
+        if (timeStatsAll%60 % 60 < 10) {
+            newMinutes = '0' + String.valueOf(timeStatsAll%60);
+        } else {
+            newMinutes = String.valueOf(timeStatsAll%60);
+        }
+
+        this.timeStatsAll =  newHours + ":" + newMinutes;
     }
 }
