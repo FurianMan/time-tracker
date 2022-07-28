@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import java.sql.*;
 
 
-public class MysqlTools {
+public class MysqlTools { // TODO надо понять что делаем с классом, потому что сейчас тут есть только логгер
     private static final String driverName = Constants.getDriverName();
     private static final String connectionString = Constants.getConnectionString();
     private static final String login = Constants.getDbLogin();

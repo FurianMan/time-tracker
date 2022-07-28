@@ -13,6 +13,11 @@ public class ConnectToDB {
     private static final String password = Constants.getDbPassword();
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
 
+    /**
+     * Метод для подключения к БД
+     * Возвращает экземпляр подключения
+     * Если что-то пошло не так - вызываем исключения
+    * */
     static Connection connectToDatabase() throws ApplicationException {
         try {
             Class.forName(driverName);
@@ -27,7 +32,7 @@ public class ConnectToDB {
             mysqlLogger.error("Can't get connection to database", e);
             throw new ApplicationException("Can't get connection to database", e, 500);
         }
-        mysqlLogger.info("Connection to database has been created successfully");
+        mysqlLogger.debug("Connection to database has been created successfully");
         return conn;
     }
 }

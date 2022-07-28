@@ -15,6 +15,13 @@ public class CheckConnectionToDB {
     private static final String password = Constants.getDbPassword();
     private static final Logger mysqlLogger = Constants.getMysqlLogger();
     static Connection conn;
+
+    /**
+     * Метод используется для проверки подключения к БД
+     * При старте контейнера time-tracker
+     * Используется бесконечный цикл
+     * Условием выхода является подключение к БД
+    * */
     public static void checkConnectionToDB () { //TODO в целом работает, но можно еще проверять, если вдруг база упадет и переподключаться к ней
         mysqlLogger.info("Connecting to database...");
         while (true) {

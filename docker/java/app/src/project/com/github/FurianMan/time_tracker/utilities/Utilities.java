@@ -2,7 +2,7 @@ package com.github.FurianMan.time_tracker.utilities;
 
 import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.exceptions.ErrResponse;
+import com.github.FurianMan.time_tracker.exceptions.ErrResponseToUser;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsOneline;
 import com.github.FurianMan.time_tracker.mysqlUtilities.GetWorkStatsPeriod;
@@ -22,23 +22,22 @@ public class Utilities {
         return env.get(keyName);
     }
 
+    /**
+     * Метод предназначен для проверки наличия поля 'Content-type: application/json'
+     * Таким образом мы обрабатываем дату только в формате json
+     * @param exchange: принимаем объект 'HttpExchange'.
+     *                Через этот объект мы взаимодействуем с входящим запросом
+     * Если происходит исключение, то за его обработку отвечает метод, который вызвал функцию.
+     * */
     public static void checkContentType(HttpExchange exchange) throws ApplicationException {
-        /**
-         * Метод предназначен для проверки наличия поля 'Content-type: application/json'
-         * Таким образом мы обрабатываем дату только в формате json
-         * @param exchange: принимаем объект 'HttpExchange'.
-         *                Через этот объект мы взаимодействуем с входящим запросом
-         * Если происходит исключение, то за его обработку отвечает метод, который вызвал функцию.
-         * */
         if (!exchange.getRequestHeaders().get("Content-type").contains("application/json")) {
             utilitieslLogger.error("Can't find Header 'Content-Type: application/json' in http-request");
-            throw new ApplicationException("Header 'Content-Type' has to be equal 'application/json'", 415);
+            throw new ApplicationException("Header `Content-Type` has to be equal `application/json` ", 415);
         }
     }
 
-    public static ErrResponse makeErrResponseBody(String message) {
-        ErrResponse bodyInstance = new ErrResponse(message);
-        return bodyInstance;
+    public static ErrResponseToUser makeErrResponseBody(String message) {
+        return new ErrResponseToUser(message);
     }
 
     /**

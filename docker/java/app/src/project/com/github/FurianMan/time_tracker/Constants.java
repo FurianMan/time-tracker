@@ -15,7 +15,8 @@ public class Constants {
     private static final String dbPassword = "javapassword";
     private static final String appVersion = "Time Tracker Version 0.1\n";
     private static final String HEADER_CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_JSON = "application/json;charset=UTF-8";
+    private static final String APPLICATION_JSON = "application/json;charset=utf-8";
+    private static final String encoding = "utf-8";
     private static final int serverPort = Integer.parseInt(Utilities.getConstants("APP_PORT"));
 
     public static Logger getHttpServerLogger() {
@@ -61,4 +62,6 @@ public class Constants {
     public static String getHeaderContentType() {
         return HEADER_CONTENT_TYPE;
     }
+
+    public static String getEncoding() {return encoding;}
 }

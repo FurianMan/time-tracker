@@ -22,10 +22,12 @@ public class GetWorkStatsPeriod {
      * [{"task_num":501,"start_time":"2022-05-26 19:51:00","end_time":"2022-07-27 11:21:25"},
      * {"task_num":888,"start_time":"2022-07-27 09:47:36","end_time":"2022-07-27 09:49:28"},
      * {"task_num":999,"start_time":"2022-07-27 09:47:47","end_time":"2022-07-27 11:21:18"}]}
+     *
+     * Всю работу с данными выполняет mysql, мы их лишь сохраняем в класс
      * Поиск статистики осуществляется по полям:
      * user_id, start_time, end_time
-     * Берем их значения из
      *
+     * Берем их значения из
      * @param reqData - экземпляр RequestUserStats со значениям от пользователя
      *                Из БД мы получим уже отсортированные по start_time данные, т.е. по времени начала трека.
      */
@@ -57,8 +59,8 @@ public class GetWorkStatsPeriod {
             mysqlLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("Can't find in database stats for user_id=%d", user_id));
-                throw new ApplicationException("Can't find stats in database", 404);
+                mysqlLogger.error(String.format("Cannot find in database period stats for user_id=%d", user_id));
+                throw new ApplicationException(String.format("Cannot find in database period stats for user_id=%d", user_id), 404);
             } else {
                 do {
                     TimeStatsPeriod timeStatsPeriodPeerTask = new TimeStatsPeriod();
@@ -68,10 +70,10 @@ public class GetWorkStatsPeriod {
                     respStats.addStats(timeStatsPeriodPeerTask);
                 } while (resSet.next());
             }
-            mysqlLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
+            mysqlLogger.info(String.format("Period stats has been found successfully for user_id=%d", user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'getWorkStatsPeriod' to database", e);
-            throw new ApplicationException("Can't execute query 'getWorkStatsPeriod' to database", e, 500);
+            mysqlLogger.error("Cannot execute query `getWorkStatsPeriod` to database", e);
+            throw new ApplicationException("Cannot execute query `getWorkStatsPeriod` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

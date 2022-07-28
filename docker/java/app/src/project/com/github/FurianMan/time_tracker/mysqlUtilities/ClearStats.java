@@ -31,7 +31,7 @@ public class ClearStats {
 
         if (user_id == 0) {
             mysqlLogger.error("In request of clearing stats user_id must not be equal 0");
-            throw new ApplicationException("Can't clear stats from database. user_id must not be equal 0", 415);
+            throw new ApplicationException("Cannot clear stats from database. user_id must not be equal 0", 415);
         }
 
         /*
@@ -47,11 +47,11 @@ public class ClearStats {
             sqlQuery = String.format("DELETE FROM tasks WHERE user_id=%d;", user_id);
             mysqlLogger.debug(String.format(sqlQuery));
             statmt.executeUpdate(sqlQuery);
-            mysqlLogger.info(String.format("User's stats has been deleted successfully: user_id=%d", user_id));
+            mysqlLogger.info(String.format("User`s stats has been deleted successfully: user_id=%d", user_id));
 
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'clearStats' in database", e);
-            throw new ApplicationException("Can't execute query 'clearStats' in database", e, 500);
+            mysqlLogger.error("Cannot execute query `clearStats` in database", e);
+            throw new ApplicationException("Cannot execute query `clearStats` in database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

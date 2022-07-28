@@ -2,7 +2,7 @@ package com.github.FurianMan.time_tracker.utilities;
 
 public class ResponseStatsTimeOneline extends ResponseStats {
     private int user_id;
-    private String timeStatsAll;
+    private String timeStatsOneline;
 
     @Override
     public int getUser_id() {
@@ -20,8 +20,8 @@ public class ResponseStatsTimeOneline extends ResponseStats {
     // Этот метод тут не нужен...
     public void addStats(TimeStatsPeriod timeStatsPeriod) {return;}
 
-    public String getTimeStatsAll() {
-        return timeStatsAll;
+    public String getTimeStatsOneline() {
+        return timeStatsOneline;
     }
 
     /**
@@ -30,26 +30,26 @@ public class ResponseStatsTimeOneline extends ResponseStats {
      * Эти минуты из бд - время затраченное на все задачи
      * в течение какого-то периода
      * */
-    public void setTimeStatsAll(int timeStatsAll) {
+    public void setTimeStatsOneline(int timeStatsOneline) {
         String newHours;
         String newMinutes;
 
-        if ( timeStatsAll == 0) {
-            this.timeStatsAll = "00:00";
-            System.out.println(this.timeStatsAll);
+        if ( timeStatsOneline == 0) {
+            this.timeStatsOneline = "00:00";
+            System.out.println(this.timeStatsOneline);
             return;
-        } else if (timeStatsAll / 60 < 10){
-            newHours = '0' + String.valueOf(timeStatsAll/60);
+        } else if (timeStatsOneline / 60 < 10){
+            newHours = '0' + String.valueOf(timeStatsOneline /60);
         } else {
-            newHours = String.valueOf(timeStatsAll/60);
+            newHours = String.valueOf(timeStatsOneline /60);
         }
 
-        if (timeStatsAll%60 % 60 < 10) {
-            newMinutes = '0' + String.valueOf(timeStatsAll%60);
+        if (timeStatsOneline %60 % 60 < 10) {
+            newMinutes = '0' + String.valueOf(timeStatsOneline %60);
         } else {
-            newMinutes = String.valueOf(timeStatsAll%60);
+            newMinutes = String.valueOf(timeStatsOneline %60);
         }
 
-        this.timeStatsAll =  newHours + ":" + newMinutes;
+        this.timeStatsOneline =  newHours + ":" + newMinutes;
     }
 }

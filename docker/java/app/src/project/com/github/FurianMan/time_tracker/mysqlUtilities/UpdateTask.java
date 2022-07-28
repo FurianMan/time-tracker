@@ -22,18 +22,18 @@ public class UpdateTask {
 
     public static void updateTask(TableTasks taskForUpdate) throws ApplicationException {
         /**
-         * Перед изменением информации у пользователя, пытаемся его найти через метод getUser
+         * Метод нужен для закрытие задач, т.е. проставления текущего времени в поле end_time таблицы tasks
          * @param taskForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
-         * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
-         * Изменить можно name, surname, patronymic, position, birthday.
+         * end_time мы генерируем в методе, текущее время
          * */
         int user_id = taskForUpdate.getUser_id();
         int task_id = taskForUpdate.getTask_id();
 
         if (task_id == 0 || user_id == 0) {
-            mysqlLogger.error("One required fields are empty in PUT query, check field: task_id");
-            throw new ApplicationException("One required fields are empty in PUT query, check field: task_id", 415);
+            mysqlLogger.error(String.format("One or more required fields are empty in `updateTask`: task_id=%d, user_id=%d", task_id, user_id));
+            throw new ApplicationException("One or more required fields are empty in PUT query, check field: task_id, user_id", 415);
         }
+        // генерируем текущее время для end_time
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         taskForUpdate.setEnd_time(dateFormat.format(date));
@@ -65,8 +65,8 @@ public class UpdateTask {
             statmt.executeUpdate(sqlQuery);
             mysqlLogger.info(String.format("Task with task_id=%d has been closed successfully", task_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'updateTask' to database", e);
-            throw new ApplicationException("Can't execute query 'updateTask' to database", e, 500);
+            mysqlLogger.error("Cannot execute query `updateTask` to database", e);
+            throw new ApplicationException("Cannot execute query `updateTask` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

@@ -32,10 +32,12 @@ public class DeleteUser {
         String surname = delUser.getSurname();
         String birthday = delUser.getBirthday();
         String position = delUser.getPosition();
+
+        // Делаем проверку переменных, чтобы убедиться, что хотя бы один из способов удаления у нас доступен
         if (user_id == 0 &&
                 (name == null || surname == null || birthday == null || position == null)) {
             mysqlLogger.error("Request does not have required fields for deleting, please check documentation");
-            throw new ApplicationException("Can't delete user from database", 415);
+            throw new ApplicationException("Cannot delete user from database", 415);
         }
         if (delUser.getUser_id() != 0) {
             conn = connectToDatabase();
@@ -47,8 +49,8 @@ public class DeleteUser {
                 mysqlLogger.info(String.format("User has been deleted successfully: user_id=%d", user_id));
 
             } catch (SQLException e) {
-                mysqlLogger.error("Can't execute query 'deleteUser' in database", e);
-                throw new ApplicationException("Can't execute query 'deleteUser' in database", e, 500);
+                mysqlLogger.error("Cannot execute query `deleteUser` in database", e);
+                throw new ApplicationException("Cannot execute query `deleteUser` in database", e, 500);
             } finally {
                 disconnectToDatabase(conn);
             }
@@ -62,8 +64,8 @@ public class DeleteUser {
                 mysqlLogger.info(String.format("User has been deleted successfully: name=%s, surname=%s, position=%s birthday=%s", name, surname, position, birthday));
 
             } catch (SQLException e) {
-                mysqlLogger.error("Can't execute query 'deleteUser' in database", e);
-                throw new ApplicationException("Can't execute query 'deleteUser' in database", e, 500);
+                mysqlLogger.error("Cannot execute query `deleteUser` in database", e);
+                throw new ApplicationException("Cannot execute query `deleteUser` in database", e, 500);
             } finally {
                 disconnectToDatabase(conn);
             }

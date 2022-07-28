@@ -21,10 +21,10 @@ public class CheckTask {
 
     /**
      * Проверяем в БД существует ли уже task с таким пользователем и номером задания
-     * но у которого end_time IS NULL. Таким образом предотвращаем повторного трека задачи
-     * Если наши задачу - поднимаем исключение. Если её нет, то молчим.
+     * но у которого end_time IS NULL. Таким образом предотвращаем повторный трека задачи
+     * Если нашли задачу - поднимаем исключение. Если его нет, то молчим.
      *
-     * @param taskForCheck - передаем объект с данными задания
+     * @param taskForCheck - передаем объект с данными задания из запроса пользователя
      */
     public static void checkOpenTaskErr(TableTasks taskForCheck) throws ApplicationException {
         int user_id = taskForCheck.getUser_id();
@@ -43,8 +43,8 @@ public class CheckTask {
             }
             mysqlLogger.info(String.format("Previous opened task has not been found: task_num= %d user_id= %d", user_id, task_num));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'checkOpenTaskErr' to database", e);
-            throw new ApplicationException("Can't execute query 'checkOpenTaskErr' to database", e, 500);
+            mysqlLogger.error("Cannot execute query `checkOpenTaskErr` to database", e);
+            throw new ApplicationException("Cannot execute query `checkOpenTaskErr` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }
@@ -55,7 +55,7 @@ public class CheckTask {
      * и у которого end_time IS NULL.
      * Если такого task нет, то нечего обновлять, возвращаем исключение
      *
-     * @param taskForCheck - передаем объект с данными задания
+     * @param taskForCheck - передаем объект с данными задания из запроса пользователя
      */
     public static void checkOpenTask(TableTasks taskForCheck) throws ApplicationException {
         int task_id = taskForCheck.getTask_id();
@@ -69,13 +69,13 @@ public class CheckTask {
             mysqlLogger.debug(String.format(sqlQuery));
             resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("The task is not exists: task_id=%d user_id= %d", task_id, user_id));
-                throw new ApplicationException(String.format("The task is not exists: task_id=%d user_id= %d", task_id, user_id), 404);
+                mysqlLogger.error(String.format("The task does not exist: task_id=%d user_id= %d", task_id, user_id));
+                throw new ApplicationException(String.format("The task does not exist: task_id=%d user_id= %d", task_id, user_id), 404);
             }
             mysqlLogger.info(String.format("The task with task_id=%d and user_id= %d has been found successfully", task_id, user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'checkOpenTask' to database", e);
-            throw new ApplicationException("Can't execute query 'checkOpenTask' to database", e, 500);
+            mysqlLogger.error("Can`t execute query `checkOpenTask` to database", e);
+            throw new ApplicationException("Cannot execute query `checkOpenTask` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }
@@ -84,7 +84,7 @@ public class CheckTask {
      * Проверяем в БД существует ли уже task с таким пользователем и номером задания
      * и у которого end_time уже имеется, т.е. проверяем закрыт ли уже по ней трекинг.
      * Если трекинг закрыт - поднимаем исключение
-     * @param taskForCheck - передаем объект с данными задания
+     * @param taskForCheck - передаем объект с данными задания из запроса пользователя
      */
     public static void checkCloseTask(TableTasks taskForCheck) throws ApplicationException {
         int task_id = taskForCheck.getTask_id();
@@ -103,8 +103,8 @@ public class CheckTask {
             }
             mysqlLogger.info(String.format("The opened task with task_id=%d and user_id=%d has been found successfully", task_id, user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'checkCloseTask' to database", e);
-            throw new ApplicationException("Can't execute query 'checkCloseTask' to database", e, 500);
+            mysqlLogger.error("Can`t execute query `checkCloseTask` to database", e);
+            throw new ApplicationException("Cannot execute query `checkCloseTask` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

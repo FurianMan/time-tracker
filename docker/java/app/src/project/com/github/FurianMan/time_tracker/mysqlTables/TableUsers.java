@@ -1,9 +1,12 @@
 package com.github.FurianMan.time_tracker.mysqlTables;
 
-//import com.google.gson.annotations.Expose;
-
 import java.util.ArrayList;
 
+/**
+ * Класс описывает таблицу в mysql
+ * time_tracker.users
+ * Используется для взаимодействия с БД
+ * */
 public class TableUsers {
     private int user_id;
     private String patronymic;

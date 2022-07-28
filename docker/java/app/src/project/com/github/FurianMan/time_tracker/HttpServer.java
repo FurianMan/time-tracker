@@ -17,8 +17,11 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
 class MyHttpServer {
+    private static String contentType = Constants.getHeaderContentType();
+    private static String jsonFormat = Constants.getApplicationJson();
     private static String appVersion = Constants.getAppVersion();
     private static int serverPort = Constants.getServerPort();
+    private static String encoding = Constants.getEncoding();
     private static final Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {
                 @Override
@@ -76,14 +79,14 @@ class MyHttpServer {
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers userForSearching = gson.fromJson(request, TableUsers.class);
                     respText = gson.toJson((GetUser.getUser(userForSearching)));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -94,9 +97,8 @@ class MyHttpServer {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers newUser = gson.fromJson(request, TableUsers.class);
-                    Utilities.validateUserFields(newUser);
                     respText = gson.toJson((InsertUser.insertUser(newUser)));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -109,8 +111,9 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (ApplicationException e) {
+                    System.out.println(exchange.getRemoteAddress()); // посмотреть адрес, надо добавить в логер
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -122,13 +125,12 @@ class MyHttpServer {
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers userForUpdate = gson.fromJson(request, TableUsers.class);
-                    Utilities.validateUserFields(userForUpdate);
                     UpdateUser.updateUser(userForUpdate);
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -142,11 +144,11 @@ class MyHttpServer {
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers userForDel = gson.fromJson(request, TableUsers.class);
                     DeleteUser.deleteUser(userForDel);
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -168,14 +170,14 @@ class MyHttpServer {
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableTasks newTask = gson.fromJson(request, TableTasks.class);
                     respText = gson.toJson((InsertTask.insertTask(newTask)));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -188,11 +190,11 @@ class MyHttpServer {
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableTasks taskForUpdate = gson.fromJson(request, TableTasks.class);
                     UpdateTask.updateTask(taskForUpdate);
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -215,14 +217,14 @@ class MyHttpServer {
                     RequestUserStats reqParams = gson.fromJson(request, RequestUserStats.class);
                     respText = gson.toJson(Utilities.defineWayToGetStats(reqParams));
 //                    respText = gson.toJson(GetWorkStats.getWorkStats(taskForSearchStats));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
@@ -230,7 +232,7 @@ class MyHttpServer {
                 }
 //                } catch (UnexpectedErr e) {
 //                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-//                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+//                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), jsonFormat);
 //                    exchange.sendResponseHeaders(500, respText.getBytes(StandardCharsets.UTF_8).length);
 //                    output = exchange.getResponseBody();
 //                    output.write(respText.getBytes());
@@ -242,11 +244,11 @@ class MyHttpServer {
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableTasks clearStats = gson.fromJson(request, TableTasks.class);
                     ClearStats.clearUserStats(clearStats);
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
                 } catch (ApplicationException e) {
                     respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
-                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), Constants.getApplicationJson());
+                    exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(e.getHttpCode(), respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());

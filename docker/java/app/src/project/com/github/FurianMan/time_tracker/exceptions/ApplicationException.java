@@ -2,6 +2,11 @@ package com.github.FurianMan.time_tracker.exceptions;
 
 import com.google.gson.annotations.Expose;
 
+/**
+ * Основной класс для вызова ошибок в приложении.
+ * Вместе с причиной имеет поле httpCode, куда
+ * мы вносим номер ответа пользователю по http
+* */
 public class ApplicationException extends Exception {
     @Expose private int httpCode;
 

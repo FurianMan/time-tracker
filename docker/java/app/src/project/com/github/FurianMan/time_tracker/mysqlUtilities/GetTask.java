@@ -22,6 +22,9 @@ public class GetTask {
      * Если не нашли, то поднимаем исключение и информируем пользователя
      *
      * @param taskForSearch - передаем объект с данными пользователя
+     *
+     * Метод используется для поиска task_id, чтобы отдать его пользователю после
+     * внесения новой задачи в БД
      */
     public static TableTasks getTask(TableTasks taskForSearch) throws ApplicationException {
         int user_id = taskForSearch.getUser_id();
@@ -30,7 +33,7 @@ public class GetTask {
 
         Connection conn;
         TableTasks taskInstance = new TableTasks();
-        if (user_id != 0 && task_num != 0 && (start_time != null || start_time != "")) {
+        if (user_id != 0 && task_num != 0) { //TODO на самом деле этим методом пользуется только insertTask и там проверки эти уже есть
             conn = connectToDatabase();
             try {
                 Statement statmt = conn.createStatement();
@@ -38,10 +41,10 @@ public class GetTask {
                 ResultSet resSet = statmt.executeQuery(sqlQuery);
                 mysqlLogger.debug(String.format(sqlQuery));
                 if (!resSet.next()) {
-                    mysqlLogger.error(String.format("Can't find in database task: user_id=%d task_num=%d start_time=%s", user_id, task_num, start_time));
-                    throw new ApplicationException("Can't find task in database", 404);
+                    mysqlLogger.error(String.format("Cannot find in database task: user_id=%d task_num=%d start_time=%s", user_id, task_num, start_time));
+                    throw new ApplicationException("Cannot find task in database", 404);
                 } else {
-                    do {
+                    do { //TODO можно сделать без цикла
                         taskInstance.setTask_id(resSet.getInt("task_id"));
                         taskInstance.setUser_id(resSet.getInt("user_id"));
                         taskInstance.setTask_num(resSet.getInt("task_num"));
@@ -51,14 +54,15 @@ public class GetTask {
                 }
                 mysqlLogger.info(String.format("Task has been found successfully: user_id=%d task_num=%d start_time=%s", user_id, task_num, start_time));
             } catch (SQLException e) {
-                mysqlLogger.error("Can't execute query 'getTask' to database", e);
-                throw new ApplicationException("Can't execute query 'getTask' to database", e, 500);
+                mysqlLogger.error("Cannot execute query `getTask` to database", e);
+                throw new ApplicationException("Cannot execute query `getTask` to database", e, 500);
             } finally {
                 disconnectToDatabase(conn);
             }
             return taskInstance;
         } else {
-            mysqlLogger.error("Request does not have required fields for searching, please check documentation");
+            mysqlLogger.error("Request does not have required fields for method `getTask`");
+            mysqlLogger.debug(String.format("Received fields in `getTask`:  user_id=%d, task_num=%d, start_time=%s", user_id, task_num, start_time));
             throw new ApplicationException("Request does not have required fields for searching, please check documentation", 415);
         }
     }

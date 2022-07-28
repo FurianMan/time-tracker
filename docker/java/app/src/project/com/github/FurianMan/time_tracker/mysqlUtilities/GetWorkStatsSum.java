@@ -27,6 +27,8 @@ public class GetWorkStatsSum {
      * {"task_num":1337,"duration":"00:02"},
      * {"task_num":7331,"duration":"00:02"}
      * ]}
+     * Всю работу с данными выполняет mysql, мы их лишь сохраняем в класс
+     *
      * Поиск статистики осуществляется по полям:
      * user_id, start_time, end_time
      * Берем их значения из
@@ -62,8 +64,8 @@ public class GetWorkStatsSum {
             mysqlLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("Can't find in database stats for user_id=%d", user_id));
-                throw new ApplicationException("Can't find stats in database", 404);
+                mysqlLogger.error(String.format("Cannot find in database sum stats for user_id=%d", user_id));
+                throw new ApplicationException(String.format("Cannot find in database sum stats for user_id=%d", user_id), 404);
             } else {
                 do {
                     TimeStatsSum timeStatsSumPeerTask = new TimeStatsSum();
@@ -74,8 +76,8 @@ public class GetWorkStatsSum {
             }
             mysqlLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'getWorkStats' to database", e);
-            throw new ApplicationException("Can't execute query 'getWorkStats' to database", e, 500);
+            mysqlLogger.error("Cannot execute query `getWorkStatsSum` to database", e);
+            throw new ApplicationException("Cannot execute query `getWorkStatsSum` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }

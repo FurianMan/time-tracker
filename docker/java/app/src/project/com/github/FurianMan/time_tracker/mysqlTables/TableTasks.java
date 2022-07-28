@@ -1,5 +1,10 @@
 package com.github.FurianMan.time_tracker.mysqlTables;
 
+/**
+ * Класс описывает таблицу в mysql
+ * time_tracker.tasks
+ * Используется для взаимодействия с БД
+* */
 public class TableTasks {
     private int task_id;
 

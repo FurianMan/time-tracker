@@ -3,6 +3,7 @@ package com.github.FurianMan.time_tracker.mysqlUtilities;
 import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
+import com.github.FurianMan.time_tracker.utilities.Utilities;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -24,10 +25,13 @@ public class UpdateUser {
      * */
     public static void updateUser(TableUsers userForUpdate) throws ApplicationException {
         if (userForUpdate.getUser_id() == 0 &&
-                (userForUpdate.getName() == null || userForUpdate.getSurname() == null || userForUpdate.getBirthday() == null)) {
-            mysqlLogger.error("One or more required fields are empty in PUT query, check fields: name, surname, birthday, user_id");
-            throw new ApplicationException("One or more required fields are empty in PUT query, check fields: name, surname, birthday, user_id", 415);
+                (userForUpdate.getName() == null || userForUpdate.getSurname() == null || userForUpdate.getBirthday() == null || userForUpdate.getPosition() == null)) {
+            mysqlLogger.error(String.format("One or more required fields are empty in `updateUser`, " +
+                            "check fields: name=%s, surname=%s, birthday=%s, position=%s, user_id=%d",
+                    userForUpdate.getName(), userForUpdate.getSurname(), userForUpdate.getBirthday(), userForUpdate.getPosition(), userForUpdate.getUser_id()));
+            throw new ApplicationException("One or more required fields are empty in PUT query, check fields: name, surname, birthday, position, user_id", 415);
         }
+        // получаем экземпляр класса с текущими значениями из БД и назначаем id
         TableUsers userDB = getUser(userForUpdate);
         int user_id = userDB.getUser_id();
         String name;
@@ -35,6 +39,11 @@ public class UpdateUser {
         String patronymic;
         String position;
         String birthday;
+
+        // Валидируем полученные поля
+        Utilities.validateUserFields(userForUpdate);
+
+        // если не указали новое поле для изменения, то берем старое из экземпляра с текущими значениями из БД
         name = userForUpdate.getNewName() == null ? userDB.getName() : userForUpdate.getNewName();
         surname = userForUpdate.getNewSurname() == null ? userDB.getSurname() : userForUpdate.getNewSurname();
         patronymic = userForUpdate.getNewPatronymic() == null ? userDB.getPatronymic() : userForUpdate.getNewPatronymic();
@@ -49,8 +58,8 @@ public class UpdateUser {
             statmt.executeUpdate(sqlQuery);
             mysqlLogger.info(String.format("User has been updated successfully, new values: name=%s, surname=%s, position=%s, birthday=%s", name, surname, position, birthday));
         } catch (SQLException e) {
-            mysqlLogger.error("Can't execute query 'updateUser' to database", e);
-            throw new ApplicationException("Can't execute query 'updateUser' to database", e, 500);
+            mysqlLogger.error("Cannot execute query `updateUser` to database", e);
+            throw new ApplicationException("Can't execute query `updateUser` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
         }
