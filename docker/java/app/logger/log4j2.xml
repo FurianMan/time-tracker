@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="10">
+<Appenders>
+    <Console name="LogToConsole" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{1} - %msg%n"/>
+    </Console>
+    <!-- <File name="LogToFile" fileName="/logger/logs/time_tracker.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c - %msg%n"/>
+    </File> -->
+    <RollingFile name="LogToRollingFile" fileName="/logger/logs/time_tracker.log"
+                    filePattern="/logger/logs/$${date:yyyy-MM}/time_tracker-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c - %msg%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="10 MB"/>
+			</Policies>
+		</RollingFile>
+</Appenders>
+<Loggers>
+    <!-- <Logger name="com.github.FurianMan.time_tracker" level="debug" additivity="false">
+        <AppenderRef ref="LogToFile"/>
+        <AppenderRef ref="LogToConsole"/>
+    </Logger> -->
+    <!-- <Root level="info" additivity="false"> -->
+    <!-- <Logger name="com.github.FurianMan.time_tracker" level="ALL"/> -->
+    <Root level="DEBUG" additivity="false">
+        <!-- <AppenderRef ref="LogToFile"/> -->
+        <AppenderRef ref="LogToConsole"/>
+        <AppenderRef ref="LogToRollingFile"/>
+    </Root>
+</Loggers>
+</Configuration>

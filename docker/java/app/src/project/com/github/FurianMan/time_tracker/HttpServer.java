@@ -78,11 +78,15 @@ class MyHttpServer {
         OutputStream output;
         switch (exchange.getRequestMethod()) {
             case "GET": //TODO сделать возможным поиск по любому параметру
+                httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+                        + " Method: " + exchange.getRequestMethod()
+                        + " On server: " + exchange.getLocalAddress().getAddress()
+                        + exchange.getHttpContext().getPath());
                 try {
-                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-                            + " Method: " + exchange.getRequestMethod()
-                            + " On server: " + exchange.getLocalAddress().getAddress()
-                            + exchange.getHttpContext().getPath());
+//                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+//                            + " Method: " + exchange.getRequestMethod()
+//                            + " On server: " + exchange.getLocalAddress().getAddress()
+//                            + exchange.getHttpContext().getPath());
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers userForSearching = gson.fromJson(request, TableUsers.class);
@@ -109,11 +113,15 @@ class MyHttpServer {
                     output.flush();
                 }
             case "POST":
+                httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+                        + " Method: " + exchange.getRequestMethod()
+                        + " On server: " + exchange.getLocalAddress().getAddress()
+                        + exchange.getHttpContext().getPath());
                 try {
-                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-                            + " Method: " + exchange.getRequestMethod()
-                            + " On server: " + exchange.getLocalAddress().getAddress()
-                            + exchange.getHttpContext().getPath());
+//                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+//                            + " Method: " + exchange.getRequestMethod()
+//                            + " On server: " + exchange.getLocalAddress().getAddress()
+//                            + exchange.getHttpContext().getPath());
                     Utilities.checkContentType(exchange);
                     String request = new String(exchange.getRequestBody().readAllBytes());
                     TableUsers newUser = gson.fromJson(request, TableUsers.class);

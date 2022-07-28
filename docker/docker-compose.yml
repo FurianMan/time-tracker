@@ -24,11 +24,11 @@ services:
       APP_PORT: 6969
       TZ: Asia/Novosibirsk
       # LOG_LEVEL: INFO
-      # LOG_CONFIG: "-Dlog4j2.configurationFile=./log/log4j2.xml -Dfile.encoding=UTF-8"
+      LOG_CONFIG: "-Dlog4j2.configurationFile=/logger/log4j2.xml -Dfile.encoding=UTF-8"
     ports:
       - "6969:6969"
-    # volumes:
-    #   - ./target/*.jar /app.jar
+    volumes:
+      - ./java/app/logger:/logger
     depends_on:
       - database
     links:
