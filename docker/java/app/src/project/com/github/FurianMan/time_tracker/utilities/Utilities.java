@@ -36,6 +36,10 @@ public class Utilities {
         }
     }
 
+    /**
+     * Метод нужен для генерации ответа пользователю
+     * благодаря этому пользователь видит только высокоуровневую ошибку
+    * */
     public static ErrResponseToUser makeErrResponseBody(String message) {
         return new ErrResponseToUser(message);
     }
@@ -45,6 +49,10 @@ public class Utilities {
      * Для валидации используются регулярные выражения. Строки ограничены размером в 255 символа.
      * Ограничение идет от mysql.
      * Если во время валидации что-то идет не так, то выдаем исключение.
+     * Валидируются:
+     * name, surname, position, patronymic,
+     * newName, newSurname, newPatronymic, newPosition
+     * если поле null, то пропускаем его
      *
      * @param newUser - пользователь со значениями из http запроса.
      */
@@ -62,8 +70,10 @@ public class Utilities {
         /*
          * Дату проверяем отдельно, а т.к. их может быть две (вторая используется для update), то приходится проверять обе
          * */
-        if (newUser.getNewBirthday() != null && !Pattern.matches(regexDate, newUser.getNewBirthday()) && !Pattern.matches(regexDate, newUser.getBirthday())) {
-            utilitieslLogger.error("Inappropriate json field value for birthday or newBirthday");
+        String birthday = newUser.getBirthday();
+        String newBirthday = newUser.getNewBirthday();
+        if (newBirthday != null && !Pattern.matches(regexDate, newBirthday) && !Pattern.matches(regexDate, birthday)) {
+            utilitieslLogger.error(String.format("Inappropriate json field value for birthday=%s or newBirthday=%s", birthday, newBirthday));
             throw new ApplicationException("Inappropriate json field value for birthday or newBirthday", 415);
         }
         utilitieslLogger.info("Function validateUserFields has passed successfully");
@@ -90,7 +100,7 @@ public class Utilities {
             throw new ApplicationException("start_time or end_time must not be empty!", 415);
         }
         if (!Pattern.matches(regexDateTime, start_time) || !Pattern.matches(regexDateTime, end_time)) {
-            utilitieslLogger.error("Inappropriate json value for fields start_time or end_time, please check documentation");
+            utilitieslLogger.error(String.format("Inappropriate json value for fields start_time=%s or end_time=%s", start_time, end_time));
             throw new ApplicationException("Inappropriate json value for fields start_time or end_time, please check documentation", 415);
         }
         utilitieslLogger.info("Validation of start_time and end_time has been passed successfully");
@@ -128,7 +138,7 @@ public class Utilities {
             utilitieslLogger.info("In query of getting stats has been found mode=period");
             return GetWorkStatsPeriod.getWorkStatsPeriod(reqData);
         } else {
-            utilitieslLogger.error("Inappropriate json value for field mode, please check documentation");
+            utilitieslLogger.error("Inappropriate json value for field mode for query of getting stats");
             throw new ApplicationException("Inappropriate json value for field mode, please check documentation", 415);
         }
     }

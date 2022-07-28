@@ -9,7 +9,7 @@
     <Logger name="com.github.FurianMan.time_tracker" level="debug" additivity="false">
         <AppenderRef ref="LogToConsole"/>
     </Logger>
-    <Root level="debug" additivity="false">
+    <Root level="info" additivity="false">
         <AppenderRef ref="LogToConsole"/>
     </Root>
 </Loggers>
