@@ -78,18 +78,17 @@ class MyHttpServer {
         OutputStream output;
         switch (exchange.getRequestMethod()) {
             case "GET": //TODO сделать возможным поиск по любому параметру
-                httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-                        + " Method: " + exchange.getRequestMethod()
-                        + " On server: " + exchange.getLocalAddress().getAddress()
-                        + exchange.getHttpContext().getPath());
                 try {
-//                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-//                            + " Method: " + exchange.getRequestMethod()
-//                            + " On server: " + exchange.getLocalAddress().getAddress()
-//                            + exchange.getHttpContext().getPath());
+                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+                            + " Method: " + exchange.getRequestMethod()
+                            + " On server: " + exchange.getLocalAddress().getAddress()
+                            + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForSearching = gson.fromJson(request, TableUsers.class);
+                    TableUsers userForSearching = gson.fromJson(requestBody, TableUsers.class);
                     respText = gson.toJson((GetUser.getUser(userForSearching)));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
@@ -104,27 +103,27 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
             case "POST":
-                httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-                        + " Method: " + exchange.getRequestMethod()
-                        + " On server: " + exchange.getLocalAddress().getAddress()
-                        + exchange.getHttpContext().getPath());
                 try {
-//                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
-//                            + " Method: " + exchange.getRequestMethod()
-//                            + " On server: " + exchange.getLocalAddress().getAddress()
-//                            + exchange.getHttpContext().getPath());
+                    httpServerLogger.info("Request from: " + exchange.getRemoteAddress().getAddress()
+                            + " Method: " + exchange.getRequestMethod()
+                            + " On server: " + exchange.getLocalAddress().getAddress()
+                            + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers newUser = gson.fromJson(request, TableUsers.class);
+                    TableUsers newUser = gson.fromJson(requestBody, TableUsers.class);
                     respText = gson.toJson((InsertUser.insertUser(newUser)));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
@@ -139,14 +138,15 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
 
             case "PUT":
                 try {
@@ -154,9 +154,12 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForUpdate = gson.fromJson(request, TableUsers.class);
+                    TableUsers userForUpdate = gson.fromJson(requestBody, TableUsers.class);
                     UpdateUser.updateUser(userForUpdate);
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
@@ -168,15 +171,15 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
-
+                break;
 
             case "DELETE":
                 try {
@@ -184,9 +187,12 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableUsers userForDel = gson.fromJson(request, TableUsers.class);
+                    TableUsers userForDel = gson.fromJson(requestBody, TableUsers.class);
                     DeleteUser.deleteUser(userForDel);
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
@@ -198,17 +204,19 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
 
             default:
                 exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed
+                break;
         }
         exchange.close();
     }
@@ -222,9 +230,12 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableTasks newTask = gson.fromJson(request, TableTasks.class);
+                    TableTasks newTask = gson.fromJson(requestBody, TableTasks.class);
                     respText = gson.toJson((InsertTask.insertTask(newTask)));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
@@ -239,14 +250,15 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
 
             case "PUT":
                 try {
@@ -254,9 +266,12 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableTasks taskForUpdate = gson.fromJson(request, TableTasks.class);
+                    TableTasks taskForUpdate = gson.fromJson(requestBody, TableTasks.class);
                     UpdateTask.updateTask(taskForUpdate);
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
@@ -268,16 +283,18 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
             default:
                 exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed
+                break;
         }
         exchange.close();
     }
@@ -292,11 +309,13 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    RequestUserStats reqParams = gson.fromJson(request, RequestUserStats.class);
+                    RequestUserStats reqParams = gson.fromJson(requestBody, RequestUserStats.class);
                     respText = gson.toJson(Utilities.defineWayToGetStats(reqParams));
-//                    respText = gson.toJson(GetWorkStats.getWorkStats(taskForSearchStats));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
@@ -310,14 +329,15 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
 //                } catch (UnexpectedErr e) {
 //                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
 //                    exchange.getResponseHeaders().set(Constants.getHeaderContentType(), jsonFormat);
@@ -332,9 +352,12 @@ class MyHttpServer {
                             + " Method: " + exchange.getRequestMethod()
                             + " On server: " + exchange.getLocalAddress().getAddress()
                             + exchange.getHttpContext().getPath());
+                    String requestHeaders = exchange.getRequestHeaders().entrySet().toString();
+                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    httpServerLogger.debug("Headers: " + requestHeaders + "\n"
+                            + "Body: " + requestBody);
                     Utilities.checkContentType(exchange);
-                    String request = new String(exchange.getRequestBody().readAllBytes());
-                    TableTasks clearStats = gson.fromJson(request, TableTasks.class);
+                    TableTasks clearStats = gson.fromJson(requestBody, TableTasks.class);
                     ClearStats.clearUserStats(clearStats);
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(200, -1);
@@ -346,17 +369,19 @@ class MyHttpServer {
                     output.write(respText.getBytes());
                     output.flush();
                 } catch (JsonParseException e) { // экспериметально обрабатываю ошибки при парсинге
-                    httpServerLogger.error("Failed json parsing \n" + e.getMessage());
-                    respText = gson.toJson(Utilities.makeErrResponseBody(e.getMessage()));
+                    httpServerLogger.error("Failed json parsing, cause: " + e.getMessage());
+                    respText = gson.toJson(Utilities.makeErrResponseBody("Failed json parsing"));
                     exchange.getResponseHeaders().set(contentType, jsonFormat);
                     exchange.sendResponseHeaders(415, respText.getBytes(StandardCharsets.UTF_8).length);
                     output = exchange.getResponseBody();
                     output.write(respText.getBytes());
                     output.flush();
                 }
+                break;
 
             default:
                 exchange.sendResponseHeaders(405, -1);// 405 Method Not Allowed
+                break;
         }
         exchange.close();
     }
