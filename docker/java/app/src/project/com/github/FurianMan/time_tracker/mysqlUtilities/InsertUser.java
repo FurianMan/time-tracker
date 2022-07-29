@@ -1,23 +1,20 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.utilities.ResponseUserId;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
 import com.github.FurianMan.time_tracker.utilities.Utilities;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.github.FurianMan.time_tracker.Constants.insertUserLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class InsertUser {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
-
     /**
      * Метод необходим для внесения пользователя в таблицу users
      * Уникальным пользователь в mysql является по сумме полей:
@@ -30,7 +27,7 @@ public class InsertUser {
      *
      * Метод возвращает user_id упакованный в класс
     * */
-    public static ResponseUserId insertUser(TableUsers newUser) throws ApplicationException { //TODO если пользователь уже есть, то мы никак не проверям, просто выдаем ошибку
+    public static ResponseUserId insertUser(TableUsers newUser) { //TODO если пользователь уже есть, то мы никак не проверям, просто выдаем ошибку
         newUser.setUser_id(0); // нужно занулить, чтобы если пользователь укажет его, то мы по нему после не искали в getUser
         String name = newUser.getName();
         String surname = newUser.getSurname();
@@ -38,7 +35,7 @@ public class InsertUser {
         String position = newUser.getPosition();
         String birthday = newUser.getBirthday();
         if (name == null || surname == null || birthday == null || position == null) {
-            mysqlLogger.error("One or more required fields are empty in POST query, check fields: name, surname, birthday, position");
+            insertUserLogger.error("One or more required fields are empty in POST query, check fields: name, surname, birthday, position");
             throw new ApplicationException("One or more required fields are empty in POST query, check fields: name, surname, birthday, position", 415);
         }
         //Проверяем поля на корректность
@@ -50,17 +47,17 @@ public class InsertUser {
             if (patronymic == null) {
                 // Убрали в запрос ковычки, чтобы вставить NULL в ДБ
                 String sqlQuery = (String.format("INSERT INTO users (name, surname, patronymic, position, birthday) VALUES ('%s', '%s', %s, '%s', '%s');", name, surname, patronymic, position, birthday));
-                mysqlLogger.debug(sqlQuery);
+                insertUserLogger.debug(sqlQuery);
                 statmt.executeUpdate(sqlQuery);
-                mysqlLogger.info(String.format("User has been created successfully: name=%s, surname=%s, patronymic=%s position=%s, birthday=%s", name, surname, patronymic, position, birthday));
+                insertUserLogger.info(String.format("User has been created successfully: name=%s, surname=%s, patronymic=%s position=%s, birthday=%s", name, surname, patronymic, position, birthday));
             } else {
                 String sqlQuery = (String.format("INSERT INTO users (name, surname, patronymic, position, birthday) VALUES ('%s', '%s', '%s', '%s', '%s');", name, surname, patronymic, position, birthday));
-                mysqlLogger.debug(sqlQuery);
+                insertUserLogger.debug(sqlQuery);
                 statmt.executeUpdate(sqlQuery);
-                mysqlLogger.info(String.format("User has been created successfully: name=%s, surname=%s, patronymic=%s position=%s, birthday=%s", name, surname, patronymic, position, birthday));
+                insertUserLogger.info(String.format("User has been created successfully: name=%s, surname=%s, patronymic=%s position=%s, birthday=%s", name, surname, patronymic, position, birthday));
             }
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `insertUser` in database", e);
+            insertUserLogger.error("Cannot execute query `insertUser` in database", e);
             throw new ApplicationException("Cannot execute query `insertUser` in database", e, 500);
         } finally {
             disconnectToDatabase(conn);

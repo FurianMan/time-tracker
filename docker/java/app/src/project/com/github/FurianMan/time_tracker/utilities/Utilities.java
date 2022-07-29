@@ -1,6 +1,5 @@
 package com.github.FurianMan.time_tracker.utilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.exceptions.ErrResponseToUser;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
@@ -12,12 +11,11 @@ import com.sun.net.httpserver.HttpExchange;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static com.github.FurianMan.time_tracker.Constants.utilitieslLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class Utilities {
     static private Map<String, String> env = System.getenv();
-    private static final org.slf4j.Logger utilitieslLogger = Constants.getUtilitieslLogger();
-
     public static String getConstants(String keyName) {
         return env.get(keyName);
     }
@@ -29,7 +27,7 @@ public class Utilities {
      *                Через этот объект мы взаимодействуем с входящим запросом
      * Если происходит исключение, то за его обработку отвечает метод, который вызвал функцию.
      * */
-    public static void checkContentType(HttpExchange exchange) throws ApplicationException {
+    public static void checkContentType(HttpExchange exchange) {
         if (!exchange.getRequestHeaders().get("Content-type").contains("application/json")) {
             utilitieslLogger.error("Can't find Header 'Content-Type: application/json' in http-request");
             throw new ApplicationException("Header `Content-Type` has to be equal `application/json` ", 415);
@@ -56,7 +54,7 @@ public class Utilities {
      *
      * @param newUser - пользователь со значениями из http запроса.
      */
-    public static void validateUserFields(TableUsers newUser) throws ApplicationException {
+    public static void validateUserFields(TableUsers newUser) {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
         String regexDate = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))$"; // дата формата 2023-12-31
         ArrayList<String> fieldsList = newUser.getValues();
@@ -89,7 +87,7 @@ public class Utilities {
      *
      * @param reqForGettingStats - пользователь со значениями из http запроса.
      */
-    public static void validateDateTime(RequestUserStats reqForGettingStats) throws ApplicationException {
+    public static void validateDateTime(RequestUserStats reqForGettingStats) {
         String start_time = reqForGettingStats.getStart_time();
         String end_time = reqForGettingStats.getEnd_time();
         String regexDateTime = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))" +

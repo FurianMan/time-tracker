@@ -1,22 +1,21 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DisconnectToDB {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
+import static com.github.FurianMan.time_tracker.Constants.disconnectToDBLogger;
 
-    static void disconnectToDatabase(Connection conn) throws ApplicationException {
+public class DisconnectToDB {
+
+    static void disconnectToDatabase(Connection conn) {
         try {
             conn.close();
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot close connection to database", e);
+            disconnectToDBLogger.error("Cannot close connection to database", e);
             throw new ApplicationException("Cannot close connection to database", e, 500);
         }
-        mysqlLogger.debug("Connection to database has been closed successfully");
+        disconnectToDBLogger.debug("Connection to database has been closed successfully");
     }
 }

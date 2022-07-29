@@ -1,11 +1,9 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.utilities.ResponseTaskId;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.mysqlTables.TableTasks;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,14 +12,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.github.FurianMan.time_tracker.Constants.insertTaskLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetTask.getTask;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class InsertTask {//TODO сделать проверку, что нет уже трекающей задачи. Надо искать задачу, у которой нет end_time, но мы не знаем время
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
-
     /**
      * Медот для внесения задач в mysql
      * От пользователя нам нужны task_num и user_id
@@ -31,7 +28,7 @@ public class InsertTask {//TODO сделать проверку, что нет �
      *
      * Отдаем пользовалю task_id, который упаковываем в класс ResponseTaskId
     * */
-    public static ResponseTaskId insertTask(TableTasks newTask) throws ApplicationException {//TODO посмотреть, что будет, если внести task_id
+    public static ResponseTaskId insertTask(TableTasks newTask) {//TODO посмотреть, что будет, если внести task_id
         // генерируем дату start_time от текущего времени
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -43,7 +40,7 @@ public class InsertTask {//TODO сделать проверку, что нет �
 
         // проверка, что все обязательный параметры для запроса не пустые.
         if (user_id == 0 && task_num == 0) {
-            mysqlLogger.error("Request does not have required fields for 'insertTask', please check documentation");
+            insertTaskLogger.error("Request does not have required fields for 'insertTask', please check documentation");
             throw new ApplicationException("Request does not have required fields for 'insertTask'. Can't execute query to database", 415);
         }
         // проверяем существует ли уже такая открытая задача
@@ -59,12 +56,12 @@ public class InsertTask {//TODO сделать проверку, что нет �
         try {
             Statement statmt = conn.createStatement();
             String sqlQuery = (String.format("INSERT INTO tasks (task_num, user_id, start_time) VALUES (%d, %d, Cast('%s' as datetime));", task_num, user_id, start_time));
-            mysqlLogger.debug(sqlQuery);
+            insertTaskLogger.debug(sqlQuery);
             statmt.executeUpdate(sqlQuery);
-            mysqlLogger.info(String.format("The task report has been started successfully: task_num=%d, user_id=%d", task_num, user_id));
+            insertTaskLogger.info(String.format("The task report has been started successfully: task_num=%d, user_id=%d", task_num, user_id));
 
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `insertTask` in database", e);
+            insertTaskLogger.error("Cannot execute query `insertTask` in database", e);
             throw new ApplicationException("Cannot execute query `insertTask` in database", e, 500);
         } finally {
             disconnectToDatabase(conn);

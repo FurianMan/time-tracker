@@ -1,21 +1,18 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.utilities.*;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.github.FurianMan.time_tracker.Constants.getWorkStatsPeriodLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 
 public class GetWorkStatsPeriod {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
-
     /**
      * Метода для получения периодов работы пользователя
      * Пример результата: {"user_id":1,"timeStatsPeriods":
@@ -31,7 +28,7 @@ public class GetWorkStatsPeriod {
      * @param reqData - экземпляр RequestUserStats со значениям от пользователя
      *                Из БД мы получим уже отсортированные по start_time данные, т.е. по времени начала трека.
      */
-    public static ResponseStatsTimePeriod getWorkStatsPeriod(RequestUserStats reqData) throws ApplicationException {
+    public static ResponseStatsTimePeriod getWorkStatsPeriod(RequestUserStats reqData) {
         int user_id = reqData.getUser_id();
         String start_time = reqData.getStart_time();
         String end_time = reqData.getEnd_time();
@@ -56,10 +53,10 @@ public class GetWorkStatsPeriod {
                     "  AND (start_time >= '%2$s' AND start_time <= '%3$s')" +
                     "  AND (end_time >= '%2$s' AND end_time <= '%3$s')" +
                     "  ORDER BY start_time) AS query;", user_id, start_time, end_time));
-            mysqlLogger.debug(sqlQuery);
+            getWorkStatsPeriodLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("Cannot find in database period stats for user_id=%d", user_id));
+                getWorkStatsPeriodLogger.error(String.format("Cannot find in database period stats for user_id=%d", user_id));
                 throw new ApplicationException(String.format("Cannot find in database period stats for user_id=%d", user_id), 404);
             } else {
                 do {
@@ -70,9 +67,9 @@ public class GetWorkStatsPeriod {
                     respStats.addStats(timeStatsPeriodPeerTask);
                 } while (resSet.next());
             }
-            mysqlLogger.info(String.format("Period stats has been found successfully for user_id=%d", user_id));
+            getWorkStatsPeriodLogger.info(String.format("Period stats has been found successfully for user_id=%d", user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `getWorkStatsPeriod` to database", e);
+            getWorkStatsPeriodLogger.error("Cannot execute query `getWorkStatsPeriod` to database", e);
             throw new ApplicationException("Cannot execute query `getWorkStatsPeriod` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);

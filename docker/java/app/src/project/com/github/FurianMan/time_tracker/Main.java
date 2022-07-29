@@ -1,12 +1,13 @@
 package com.github.FurianMan.time_tracker;
 
+import com.github.FurianMan.time_tracker.httpserver.HttpServerMain;
 import com.github.FurianMan.time_tracker.mysqlUtilities.CheckConnectionToDB;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        MyHttpServer.startServer();
+        HttpServerMain.startServer();
         CheckConnectionToDB.checkConnectionToDB();
     }
 }

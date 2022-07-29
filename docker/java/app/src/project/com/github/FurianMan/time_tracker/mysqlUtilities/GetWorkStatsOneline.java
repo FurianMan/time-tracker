@@ -1,21 +1,18 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.utilities.*;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.github.FurianMan.time_tracker.Constants.getWorkStatsOnelineLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 
 public class GetWorkStatsOneline {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
-
     /**
      * Метода для получения статистики по пользователю
      * Пример результата: {"user_id":1,"timeStatsOneline":"04:04"}
@@ -28,7 +25,7 @@ public class GetWorkStatsOneline {
      * Из mysql мы получаем суммарное время затраченное на задачи в минутах.
      * В возвращаемом классе мы отдаем минуты через метод, где идет преобразование в нужную форму.
      */
-    public static ResponseStatsTimeOneline getWorkStatsOneline(RequestUserStats reqData) throws ApplicationException {
+    public static ResponseStatsTimeOneline getWorkStatsOneline(RequestUserStats reqData) {
         int user_id = reqData.getUser_id();
         String start_time = reqData.getStart_time();
         String end_time = reqData.getEnd_time();
@@ -53,19 +50,19 @@ public class GetWorkStatsOneline {
                     "  AND (start_time >= '%2$s' AND start_time <= '%3$s')" +
                     "  AND (end_time >= '%2$s' AND end_time <= '%3$s')" +
                     "  ORDER BY start_time) AS query;", user_id, start_time, end_time));
-            mysqlLogger.debug(sqlQuery);
+            getWorkStatsOnelineLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                mysqlLogger.error(String.format("Cannot find in database oneline stats for user_id=%d", user_id));
+                getWorkStatsOnelineLogger.error(String.format("Cannot find in database oneline stats for user_id=%d", user_id));
                 throw new ApplicationException(String.format("Cannot find in database oneline stats for user_id=%d", user_id), 404);
             } else {
                 do {
                     respStats.setTimeStatsOneline(resSet.getInt("Duration"));
                 } while (resSet.next());
             }
-            mysqlLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
+            getWorkStatsOnelineLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `getWorkStatsOneline` to database", e);
+            getWorkStatsOnelineLogger.error("Cannot execute query `getWorkStatsOneline` to database", e);
             throw new ApplicationException("Cannot execute query `getWorkStatsOneline` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);

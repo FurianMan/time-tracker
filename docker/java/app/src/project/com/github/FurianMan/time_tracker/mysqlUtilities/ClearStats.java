@@ -10,12 +10,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static com.github.FurianMan.time_tracker.Constants.clearStatsLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class ClearStats {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
     private static Connection conn;
     private static Statement statmt;
     private static String sqlQuery;
@@ -26,11 +26,11 @@ public class ClearStats {
      * Если отчистить не получилось - поднимаем исключение
      * @param reqData - данные из запроса от пользователя упакованные в класс
      * */
-    public static void clearUserStats(TableTasks reqData) throws ApplicationException {
+    public static void clearUserStats(TableTasks reqData) {
         int user_id = reqData.getUser_id();
 
         if (user_id == 0) {
-            mysqlLogger.error("In request of clearing stats user_id must not be equal 0");
+            clearStatsLogger.error("In request of clearing stats user_id must not be equal 0");
             throw new ApplicationException("Cannot clear stats from database. user_id must not be equal 0", 415);
         }
 
@@ -45,12 +45,12 @@ public class ClearStats {
         try {
             statmt = conn.createStatement();
             sqlQuery = String.format("DELETE FROM tasks WHERE user_id=%d;", user_id);
-            mysqlLogger.debug(String.format(sqlQuery));
+            clearStatsLogger.debug(String.format(sqlQuery));
             statmt.executeUpdate(sqlQuery);
-            mysqlLogger.info(String.format("User`s stats has been deleted successfully: user_id=%d", user_id));
+            clearStatsLogger.info(String.format("User`s stats has been deleted successfully: user_id=%d", user_id));
 
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `clearStats` in database", e);
+            clearStatsLogger.error("Cannot execute query `clearStats` in database", e);
             throw new ApplicationException("Cannot execute query `clearStats` in database", e, 500);
         } finally {
             disconnectToDatabase(conn);

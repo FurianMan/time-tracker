@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose;
  * Вместе с причиной имеет поле httpCode, куда
  * мы вносим номер ответа пользователю по http
 * */
-public class ApplicationException extends Exception {
+public class ApplicationException extends RuntimeException {
     @Expose private int httpCode;
 
     ApplicationException(String message) {

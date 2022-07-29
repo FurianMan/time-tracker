@@ -6,33 +6,29 @@ import org.slf4j.Logger;
 
 import java.sql.*;
 
-public class ConnectToDB {
-    private static final String driverName = Constants.getDriverName();
-    private static final String connectionString = Constants.getConnectionString();
-    private static final String login = Constants.getDbLogin();
-    private static final String password = Constants.getDbPassword();
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
+import static com.github.FurianMan.time_tracker.Constants.*;
 
+public class ConnectToDB {
     /**
      * Метод для подключения к БД
      * Возвращает экземпляр подключения
      * Если что-то пошло не так - вызываем исключения
     * */
-    static Connection connectToDatabase() throws ApplicationException {
+    static Connection connectToDatabase() {
         try {
             Class.forName(driverName);
         } catch (ClassNotFoundException e) {
-            mysqlLogger.error("Can't get class for database. No driver found", e);
+            connectToDBLogger.error("Can't get class for database. No driver found", e);
             throw new ApplicationException("Can't get class for database. No driver found", e, 500);
         }
         Connection conn;
         try {
-            conn = DriverManager.getConnection(connectionString, login, password);
+            conn = DriverManager.getConnection(connectionString, loginDB, passwordDB);
         } catch (SQLException e) {
-            mysqlLogger.error("Can't get connection to database", e);
+            connectToDBLogger.error("Can't get connection to database", e);
             throw new ApplicationException("Can't get connection to database", e, 500);
         }
-        mysqlLogger.debug("Connection to database has been created successfully");
+        connectToDBLogger.debug("Connection to database has been created successfully");
         return conn;
     }
 }

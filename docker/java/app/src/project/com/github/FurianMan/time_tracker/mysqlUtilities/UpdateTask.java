@@ -1,10 +1,8 @@
 package com.github.FurianMan.time_tracker.mysqlUtilities;
 
-import com.github.FurianMan.time_tracker.Constants;
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
 import com.github.FurianMan.time_tracker.mysqlTables.TableTasks;
 import com.github.FurianMan.time_tracker.mysqlTables.TableUsers;
-import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,14 +11,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.github.FurianMan.time_tracker.Constants.updateTaskLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class UpdateTask {
-    private static final Logger mysqlLogger = Constants.getMysqlLogger();
-
-    public static void updateTask(TableTasks taskForUpdate) throws ApplicationException {
+    public static void updateTask(TableTasks taskForUpdate) {
         /**
          * Метод нужен для закрытие задач, т.е. проставления текущего времени в поле end_time таблицы tasks
          * @param taskForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
@@ -30,7 +27,7 @@ public class UpdateTask {
         int task_id = taskForUpdate.getTask_id();
 
         if (task_id == 0 || user_id == 0) {
-            mysqlLogger.error(String.format("One or more required fields are empty in `updateTask`: task_id=%d, user_id=%d", task_id, user_id));
+            updateTaskLogger.error(String.format("One or more required fields are empty in `updateTask`: task_id=%d, user_id=%d", task_id, user_id));
             throw new ApplicationException("One or more required fields are empty in PUT query, check field: task_id, user_id", 415);
         }
         // генерируем текущее время для end_time
@@ -61,11 +58,11 @@ public class UpdateTask {
         try {
             Statement statmt = conn.createStatement();
             String sqlQuery = String.format("UPDATE tasks SET end_time=Cast('%s' as datetime) WHERE task_id=%d;", end_time, task_id);
-            mysqlLogger.debug(sqlQuery);
+            updateTaskLogger.debug(sqlQuery);
             statmt.executeUpdate(sqlQuery);
-            mysqlLogger.info(String.format("Task with task_id=%d has been closed successfully", task_id));
+            updateTaskLogger.info(String.format("Task with task_id=%d has been closed successfully", task_id));
         } catch (SQLException e) {
-            mysqlLogger.error("Cannot execute query `updateTask` to database", e);
+            updateTaskLogger.error("Cannot execute query `updateTask` to database", e);
             throw new ApplicationException("Cannot execute query `updateTask` to database", e, 500);
         } finally {
             disconnectToDatabase(conn);
