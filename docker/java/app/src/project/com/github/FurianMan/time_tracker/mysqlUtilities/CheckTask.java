@@ -39,7 +39,7 @@ public class CheckTask {
             resSet = statmt.executeQuery(sqlQuery);
             if (resSet.next()) {
                 checkTaskLogger.error(String.format("The task already exists: task_num=%d user_id=%d. Please, firstly close the previous task", user_id, task_num));
-                throw new ApplicationException(String.format("The task already exists: task_num= %d user_id= %d. Please, firstly close the previous task", user_id, task_num), 404);
+                throw new ApplicationException(String.format("The task already exists: task_num= %d user_id= %d. Please, firstly close the previous task", user_id, task_num), 415);
             }
             checkTaskLogger.info(String.format("Previous opened task has not been found: task_num= %d user_id= %d", user_id, task_num));
         } catch (SQLException e) {
@@ -70,7 +70,7 @@ public class CheckTask {
             resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
                 checkTaskLogger.error(String.format("The task does not exist: task_id=%d user_id= %d", task_id, user_id));
-                throw new ApplicationException(String.format("The task does not exist: task_id=%d user_id= %d", task_id, user_id), 404);
+                throw new ApplicationException(String.format("The task does not exist: task_id=%d user_id= %d", task_id, user_id), 415);
             }
             checkTaskLogger.info(String.format("The task with task_id=%d and user_id= %d has been found successfully", task_id, user_id));
         } catch (SQLException e) {
@@ -99,7 +99,7 @@ public class CheckTask {
             resSet = statmt.executeQuery(sqlQuery);
             if (resSet.next()) {
                 checkTaskLogger.error(String.format("The task already closed: task_id=%d user_id=%d", task_id, user_id));
-                throw new ApplicationException(String.format("The task already closed: task_id=%d user_id=%d", task_id, user_id), 404);
+                throw new ApplicationException(String.format("The task already closed: task_id=%d user_id=%d", task_id, user_id), 415);
             }
             checkTaskLogger.info(String.format("The opened task with task_id=%d and user_id=%d has been found successfully", task_id, user_id));
         } catch (SQLException e) {

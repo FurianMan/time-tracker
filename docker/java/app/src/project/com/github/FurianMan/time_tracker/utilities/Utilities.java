@@ -70,7 +70,7 @@ public class Utilities {
          * */
         String birthday = newUser.getBirthday();
         String newBirthday = newUser.getNewBirthday();
-        if (newBirthday != null && !Pattern.matches(regexDate, newBirthday) && !Pattern.matches(regexDate, birthday)) {
+        if ((newBirthday != null && !Pattern.matches(regexDate, newBirthday)) || !Pattern.matches(regexDate, birthday)) {
             utilitieslLogger.error(String.format("Inappropriate json field value for birthday=%s or newBirthday=%s", birthday, newBirthday));
             throw new ApplicationException("Inappropriate json field value for birthday or newBirthday", 415);
         }

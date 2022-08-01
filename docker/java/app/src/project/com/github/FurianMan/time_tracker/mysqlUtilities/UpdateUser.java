@@ -20,7 +20,7 @@ public class UpdateUser {
      * Если какое-то поля не передал пользователь для изменения, то берется значение из БД
      * Изменить можно name, surname, patronymic, position, birthday.
      * */
-    public static void updateUser(TableUsers userForUpdate) {
+    public static void updateUser(TableUsers userForUpdate)  {
         if (userForUpdate.getUser_id() == 0 &&
                 (userForUpdate.getName() == null || userForUpdate.getSurname() == null || userForUpdate.getBirthday() == null || userForUpdate.getPosition() == null)) {
             updateUserkLogger.error(String.format("One or more required fields are empty in `updateUser`, " +

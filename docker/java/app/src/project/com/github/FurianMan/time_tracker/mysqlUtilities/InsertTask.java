@@ -39,9 +39,10 @@ public class InsertTask {//TODO сделать проверку, что нет �
         String start_time = newTask.getStart_time();
 
         // проверка, что все обязательный параметры для запроса не пустые.
-        if (user_id == 0 && task_num == 0) {
-            insertTaskLogger.error("Request does not have required fields for 'insertTask', please check documentation");
-            throw new ApplicationException("Request does not have required fields for 'insertTask'. Can't execute query to database", 415);
+        if (user_id == 0 || task_num == 0) {
+            insertTaskLogger.error("Request does not have required fields for 'insertTask', check user_id and task_num.");
+            insertTaskLogger.debug(String.format("Request values: user_id=%d, task_num=%d", user_id, task_num));
+            throw new ApplicationException("Request does not have required fields for 'insertTask', check user_id and task_num.", 415);
         }
         // проверяем существует ли уже такая открытая задача
         CheckTask.checkOpenTaskErr(newTask);

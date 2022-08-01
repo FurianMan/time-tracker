@@ -16,7 +16,7 @@ public class GetUser {
     /**
      * Ищем user в БД, доступны 3 варианта поиска
      * 1 - по полю user_id
-     * 2 - по полям name,surname,patronymic,birthday.
+     * 2 - по полям name,surname,position,birthday.
      * 3 - по полям name surname. Если записей больше, чем 1, то вернем последнего созданного
      * Если ничего не подошло, то поднимаем исключение и информируем пользователя
      *
