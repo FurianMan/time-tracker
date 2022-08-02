@@ -2,6 +2,7 @@ package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.httpserver.*;
 import com.github.FurianMan.time_tracker.mysqlUtilities.*;
+import com.github.FurianMan.time_tracker.scheduler.CloseTasksExecutor;
 import com.github.FurianMan.time_tracker.utilities.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,5 +44,5 @@ public class Constants {
     public static final Logger insertUserLogger = LoggerFactory.getLogger(InsertUser.class);
     public static final Logger updateTaskLogger = LoggerFactory.getLogger(UpdateTask.class);
     public static final Logger updateUserkLogger = LoggerFactory.getLogger(UpdateUser.class);
-    public static final Logger scheduledTasksLogger = LoggerFactory.getLogger(ScheduledTasks.class);
+    public static final Logger scheduledTasksLogger = LoggerFactory.getLogger(CloseTasksExecutor.class);
 }

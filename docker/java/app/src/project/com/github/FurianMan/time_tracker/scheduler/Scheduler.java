@@ -1,31 +1,28 @@
-package com.github.FurianMan.time_tracker;
-
-import java.text.SimpleDateFormat;
+package com.github.FurianMan.time_tracker.scheduler;
 
 import com.github.FurianMan.time_tracker.exceptions.ApplicationException;
-import com.github.FurianMan.time_tracker.mysqlUtilities.CloseTasksByScheduler;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
 import static com.github.FurianMan.time_tracker.Constants.scheduledTasksLogger;
 
-public class ScheduledTasks implements Job {
+public class Scheduler {
     public static void startScheduler() {
         JobDetail job = JobBuilder
-                .newJob(ScheduledTasks.class)
-                .withIdentity("ScheduledTasks", "group1")
+                .newJob(CloseTasksExecutor.class)
+                .withIdentity("CloseTasksExecutor", "group1")
                 .build();
 
         Trigger trigger = TriggerBuilder
                 .newTrigger()
-                .withIdentity("ScheduledTasksTrigger", "group1")
+                .withIdentity("CloseTasksExecutorTrigger", "group1")
                 .withSchedule(CronScheduleBuilder
-                        .cronSchedule("3 * * * * ?"))
+                        .cronSchedule("* 59 23 * * ?"))
                 .build();
 
 
         SchedulerFactory schedFact = new StdSchedulerFactory();
-        Scheduler sched = null;
+        org.quartz.Scheduler sched = null;
         try {
             sched = schedFact.getScheduler();
             sched.start();
@@ -36,11 +33,5 @@ public class ScheduledTasks implements Job {
         } catch (ApplicationException e) {
             scheduledTasksLogger.error("Failed execute job: \n" + e);
         }
-    }
-
-    @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        CloseTasksByScheduler.closeTaskByScheduler();
-        scheduledTasksLogger.info("Job CloseTasksByScheduler has been succeed");
     }
 }

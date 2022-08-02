@@ -2,6 +2,7 @@ package com.github.FurianMan.time_tracker;
 
 import com.github.FurianMan.time_tracker.httpserver.HttpServerMain;
 import com.github.FurianMan.time_tracker.mysqlUtilities.CheckConnectionToDB;
+import com.github.FurianMan.time_tracker.scheduler.Scheduler;
 
 
 public class Main {
@@ -10,7 +11,7 @@ public class Main {
 
         HttpServerMain.startServer();
         CheckConnectionToDB.checkConnectionToDB();
-        ScheduledTasks.startScheduler();
+        Scheduler.startScheduler();
 
     }
 }
