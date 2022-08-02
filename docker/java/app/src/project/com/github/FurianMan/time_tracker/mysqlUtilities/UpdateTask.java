@@ -17,12 +17,13 @@ import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.di
 import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class UpdateTask {
+
+    /**
+     * Метод нужен для закрытие задач, т.е. проставления текущего времени в поле end_time таблицы tasks
+     * @param taskForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
+     * end_time мы генерируем в методе, текущее время
+     * */
     public static void updateTask(TableTasks taskForUpdate) {
-        /**
-         * Метод нужен для закрытие задач, т.е. проставления текущего времени в поле end_time таблицы tasks
-         * @param taskForUpdate: экземпляр класса, из которого мы получаем всю необходимую информацию
-         * end_time мы генерируем в методе, текущее время
-         * */
         int user_id = taskForUpdate.getUser_id();
         int task_id = taskForUpdate.getTask_id();
 
