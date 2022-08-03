@@ -16,8 +16,8 @@ public class Constants {
     public static final String contentType = "Content-Type";
     public static final String jsonFormat = "application/json;charset=utf-8";
     public static final String encoding = "utf-8";
-    public static final int serverPort = Integer.parseInt(Utilities.getConstants("APP_PORT"));
-
+    public static final int serverPort = Integer.parseInt(Utilities.getEnvVar("APP_PORT"));
+    public static final String clearDataTime = Utilities.getEnvVar("CLEAR_DATA_TIME");
     // http loggers
     public static final Logger httpServerMainLogger = LoggerFactory.getLogger(HttpServerMain.class);
     public static final Logger handleReqUserLogger = LoggerFactory.getLogger(HandleReqUser.class);
@@ -44,5 +44,5 @@ public class Constants {
     public static final Logger insertUserLogger = LoggerFactory.getLogger(InsertUser.class);
     public static final Logger updateTaskLogger = LoggerFactory.getLogger(UpdateTask.class);
     public static final Logger updateUserkLogger = LoggerFactory.getLogger(UpdateUser.class);
-    public static final Logger scheduledTasksLogger = LoggerFactory.getLogger(CloseTasksExecutor.class);
+    public static final Logger schedulerLogger = LoggerFactory.getLogger(CloseTasksExecutor.class);
 }

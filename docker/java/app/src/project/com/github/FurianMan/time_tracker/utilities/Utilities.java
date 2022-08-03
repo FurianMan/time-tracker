@@ -16,7 +16,7 @@ import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class Utilities {
     static private Map<String, String> env = System.getenv();
-    public static String getConstants(String keyName) {
+    public static String getEnvVar(String keyName) {
         return env.get(keyName);
     }
 

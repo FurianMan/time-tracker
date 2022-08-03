@@ -23,6 +23,7 @@ services:
     environment:
       APP_PORT: 6969
       TZ: Asia/Novosibirsk
+      CLEAR_DATA_TIME: "2022-08-03"
     ports:
       - "6969:6969"
     volumes:
