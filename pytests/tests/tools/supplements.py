@@ -30,3 +30,10 @@ class TaskData:
     user_id:int = 0
     task_id:int = 0
     task_num:int = 666666
+
+@dataclass
+class Stats:
+    user_id:int = 0
+    mode:str = "oneline"
+    start_time:str = "1999-08-01 00:00:00"
+    end_time:str = "2050-08-01 00:00:00"

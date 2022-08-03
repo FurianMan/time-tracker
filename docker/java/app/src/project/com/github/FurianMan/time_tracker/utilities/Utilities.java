@@ -56,7 +56,7 @@ public class Utilities {
      */
     public static void validateUserFields(TableUsers newUser) {
         String regexLetters = "(^[а-яА-ЯёЁ]*$)|(^[A-Za-z]*$)"; // русский или англ алфавит, но не вместе.
-        String regexDate = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))$"; // дата формата 2023-12-31
+        String regexDate = "^(((2\\d\\d\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))-((0[1-9])|([12][0-9])|(3[01])))$"; // дата формата 2023-12-31
         ArrayList<String> fieldsList = newUser.getValues();
         for (String field : fieldsList) {//TODO переделать на словарь, чтобы в дебаге было видно не только значения
             if (field != null && !Pattern.matches(regexLetters, field)) {
@@ -90,7 +90,7 @@ public class Utilities {
     public static void validateDateTime(RequestUserStats reqForGettingStats) {
         String start_time = reqForGettingStats.getStart_time();
         String end_time = reqForGettingStats.getEnd_time();
-        String regexDateTime = "^(((20[012]\\d|19\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))" +
+        String regexDateTime = "^(((2\\d\\d\\d|1\\d\\d\\d)|(1\\d|2[0123]))-((0[0-9])|(1[012]))" +
                 "-((0[1-9])|([12][0-9])|(3[01]))) ([0-1]\\d|2[0-3])(:[0-5]\\d){2}$";
 
         if (start_time == null || end_time == null) {

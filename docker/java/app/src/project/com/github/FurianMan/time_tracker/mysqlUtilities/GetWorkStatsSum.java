@@ -61,8 +61,8 @@ public class GetWorkStatsSum {
             getWorkStatsSumLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                getWorkStatsSumLogger.error(String.format("Cannot find in database sum stats for user_id=%d", user_id));
-                throw new ApplicationException(String.format("Cannot find in database sum stats for user_id=%d", user_id), 404);
+                getWorkStatsSumLogger.error(String.format("Cannot find in database sum stats for user_id = %d", user_id));
+                throw new ApplicationException(String.format("Cannot find in database sum stats for user_id = %d", user_id), 404);
             } else {
                 do {
                     TimeStatsSum timeStatsSumPeerTask = new TimeStatsSum();
@@ -71,7 +71,7 @@ public class GetWorkStatsSum {
                     respStats.addStats(timeStatsSumPeerTask);
                 } while (resSet.next());
             }
-            getWorkStatsSumLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
+            getWorkStatsSumLogger.info(String.format("Stats has been found successfully for user_id = %d", user_id));
         } catch (SQLException e) {
             getWorkStatsSumLogger.error("Cannot execute query `getWorkStatsSum` to database", e);
             throw new ApplicationException("Cannot execute query `getWorkStatsSum` to database", e, 500);

@@ -53,14 +53,14 @@ public class GetWorkStatsOneline {
             getWorkStatsOnelineLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                getWorkStatsOnelineLogger.error(String.format("Cannot find in database oneline stats for user_id=%d", user_id));
-                throw new ApplicationException(String.format("Cannot find in database oneline stats for user_id=%d", user_id), 404);
+                getWorkStatsOnelineLogger.error(String.format("Cannot find in database oneline stats for user_id = %d", user_id));
+                throw new ApplicationException(String.format("Cannot find in database oneline stats for user_id = %d", user_id), 404);
             } else {
                 do {
                     respStats.setTimeStatsOneline(resSet.getInt("Duration"));
                 } while (resSet.next());
             }
-            getWorkStatsOnelineLogger.info(String.format("Stats has been found successfully for user_id=%d", user_id));
+            getWorkStatsOnelineLogger.info(String.format("Stats has been found successfully for user_id = %d", user_id));
         } catch (SQLException e) {
             getWorkStatsOnelineLogger.error("Cannot execute query `getWorkStatsOneline` to database", e);
             throw new ApplicationException("Cannot execute query `getWorkStatsOneline` to database", e, 500);

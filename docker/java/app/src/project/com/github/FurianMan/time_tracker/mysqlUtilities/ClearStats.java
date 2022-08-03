@@ -30,8 +30,8 @@ public class ClearStats {
         int user_id = reqData.getUser_id();
 
         if (user_id == 0) {
-            clearStatsLogger.error("In request of clearing stats user_id must not be equal 0");
-            throw new ApplicationException("Cannot clear stats from database. user_id must not be equal 0", 415);
+            clearStatsLogger.error("In request of clearing stats user_id must not be equal 0 or be empty");
+            throw new ApplicationException("Cannot clear stats from database. user_id must not be equal 0 or be empty", 415);
         }
 
         /*

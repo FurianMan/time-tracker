@@ -56,8 +56,8 @@ public class GetWorkStatsPeriod {
             getWorkStatsPeriodLogger.debug(sqlQuery);
             ResultSet resSet = statmt.executeQuery(sqlQuery);
             if (!resSet.next()) {
-                getWorkStatsPeriodLogger.error(String.format("Cannot find in database period stats for user_id=%d", user_id));
-                throw new ApplicationException(String.format("Cannot find in database period stats for user_id=%d", user_id), 404);
+                getWorkStatsPeriodLogger.error(String.format("Cannot find in database period stats for user_id = %d", user_id));
+                throw new ApplicationException(String.format("Cannot find in database period stats for user_id = %d", user_id), 404);
             } else {
                 do {
                     TimeStatsPeriod timeStatsPeriodPeerTask = new TimeStatsPeriod();
@@ -67,7 +67,7 @@ public class GetWorkStatsPeriod {
                     respStats.addStats(timeStatsPeriodPeerTask);
                 } while (resSet.next());
             }
-            getWorkStatsPeriodLogger.info(String.format("Period stats has been found successfully for user_id=%d", user_id));
+            getWorkStatsPeriodLogger.info(String.format("Period stats has been found successfully for user_id = %d", user_id));
         } catch (SQLException e) {
             getWorkStatsPeriodLogger.error("Cannot execute query `getWorkStatsPeriod` to database", e);
             throw new ApplicationException("Cannot execute query `getWorkStatsPeriod` to database", e, 500);
