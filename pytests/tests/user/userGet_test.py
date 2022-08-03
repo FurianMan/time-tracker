@@ -82,3 +82,52 @@ class TestUserGet:
         )
 
         payload["user_id"] = user_id # возвращаем id для удаления
+
+
+
+    """
+    Поиск при отсутствии обязательных полей, name или surname.
+    """
+    @pytest.mark.parametrize(
+        "name, surname",
+        [
+            (None, "Витур"),
+            ("Егор", None),
+        ],
+    )
+    def test_getUserErr(self, name, surname):
+        http_client = Requester()
+
+        # берем созданного пользователя из фикстуры словарем
+        payload = UserData(
+            name=name,
+            surname=surname,
+            patronymic=None,
+            position=None,
+            birthday=None
+        ).__dict__
+
+        request = http_client.get_request(endpoint=endpoint, payload=payload)
+        data = request.json()
+        assert request.status_code == 415, f"Error has not got: {data['message']}"
+
+    
+
+    """
+    Поиск пользователя, которого никогда не было
+    """
+    def test_getUserNeverExistedErr(self):
+        http_client = Requester()
+
+        # берем созданного пользователя из фикстуры словарем
+        payload = UserData(
+            name="Несуществующий",
+            surname="Пользователь",
+            patronymic=None,
+            position=None,
+            birthday=None
+        ).__dict__
+
+        request = http_client.get_request(endpoint=endpoint, payload=payload)
+        data = request.json()
+        assert request.status_code == 404, f"Error has not got: {data['message']}"

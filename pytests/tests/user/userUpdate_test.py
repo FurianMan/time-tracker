@@ -49,6 +49,69 @@ class TestUserUpdate:
 
         # удаляем пользователя после теста
         delete_user_after.append(newPayload)
+    
+
+
+    """
+    Обновление происходит по user_id
+    """
+    def test_updateUserById(self, create_user_before, delete_user_after):
+        http_client = Requester()
+
+        created_user = create_user_before
+
+        #из новых полей изменил лишь др, остальное берется из dataclass
+        payload = UserDataUpdate(
+            user_id=created_user["user_id"],
+            newName=None,
+            newSurname=None,
+            newPatronymic=None,
+            newPosition=None,
+            newBirthday="2005-09-12"
+        ).__dict__  # получаем атрибуты класса в виде словаря
+
+        request = http_client.put_request(endpoint=endpoint, payload=payload)
+        assert (
+            request.status_code == 200
+        ), f"Error get user: {request.json()['message']}"
+
+        # Запрашиваем пользователя с новыми полями
+        newPayload = UserData(
+            name=created_user["name"], 
+            surname=created_user["surname"], 
+            patronymic=created_user["patronymic"],
+            position=created_user["position"],
+            birthday=payload["newBirthday"]  # т.к. менял только др, то проверяем наличие нового др
+        ).__dict__
+
+        get_request = http_client.get_request(endpoint=endpoint, payload=newPayload)
+        assert request.status_code == 200, f"Error get user: {get_request['message']}"
+
+        # удаляем пользователя после теста
+        delete_user_after.append(newPayload)
+
+
+    
+    """
+    Обновление пользователя, которого не существует
+    """
+    def test_updateUserNeverExistedErr(self):
+        http_client = Requester()
+
+        # новые значения полей берутся дефолтом из dataclass
+        payload = UserDataUpdate(
+            name="ЭтогоПользоватея", 
+            surname="Никогда", 
+            patronymic="Не",
+            position="Существовало",
+            birthday="1997-08-01"
+        ).__dict__  # получаем атрибуты класса в виде словаря
+
+
+        request = http_client.put_request(endpoint=endpoint, payload=payload)
+        assert (
+            request.status_code == 404
+        ), f"Error has not got: {request.json()['message']}"
 
 
 

@@ -10,6 +10,7 @@ import java.sql.Statement;
 import static com.github.FurianMan.time_tracker.Constants.deleteUserLogger;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.ConnectToDB.connectToDatabase;
 import static com.github.FurianMan.time_tracker.mysqlUtilities.DisconnectToDB.disconnectToDatabase;
+import static com.github.FurianMan.time_tracker.mysqlUtilities.GetUser.getUser;
 
 public class DeleteUser {
     private static Connection conn;
@@ -38,6 +39,12 @@ public class DeleteUser {
             throw new ApplicationException("Cannot delete user from database", 415);
         }
         if (delUser.getUser_id() != 0) {
+             /*
+              Создаем класс пользователя и проверяем его существавание в db
+              * */
+            TableUsers userDB = new TableUsers();
+            userDB.setUser_id(user_id);
+            getUser(userDB);
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();
@@ -53,6 +60,15 @@ public class DeleteUser {
                 disconnectToDatabase(conn);
             }
         } else {
+             /*
+              Создаем класс пользователя и проверяем его существавание в db
+              * */
+            TableUsers userDB = new TableUsers();
+            userDB.setName(name);
+            userDB.setSurname(surname);
+            userDB.setPosition(position);
+            userDB.setBirthday(birthday);
+            getUser(userDB);
             conn = connectToDatabase();
             try {
                 statmt = conn.createStatement();

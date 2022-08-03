@@ -19,6 +19,9 @@ users_generator_settings = RussianNames(
 
 class TestUserCreate:
 
+    """
+    Дефолтное создание пользователя
+    """
     def test_postUser(self, delete_user_after):
         user = (
             users_generator_settings.get_batch()[0]
@@ -47,6 +50,11 @@ class TestUserCreate:
         # удаляем пользователя после теста
         delete_user_after.append(payload)
 
+    """
+    Вызываем 415 ошибку
+    Если полученная информация не прошла регулярку или нет обязательного поля
+    Обязательные поля: surname, name, position, birthday
+    """
     @pytest.mark.parametrize(
         "surname, name, patronymic, position, birthday",
         [

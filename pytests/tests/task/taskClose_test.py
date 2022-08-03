@@ -32,7 +32,7 @@ class TestTaskClose:
     
     
     """
-    Один из обязательных параметров не указан
+    Один из обязательных параметров не указан, user_id или task_id
     """
     @pytest.mark.parametrize(
         "user_id, task_id",
@@ -68,13 +68,19 @@ class TestTaskClose:
         assert request.status_code == 415, f"Error has not got: {request.json()['message']}"
 
     
-
+    """
+    Пытаемся закрыть задачу, которой никогда не было.
+    Чтобы не словить ошибку по несуществующему пользователю, надо сначала его создать.
+    Т.е. в тесте сначала создается пользователь и задача и уже после мы меняем task_id и пытаемся закрыть.
+    """
     def test_TaskNeverExistedErr(self, create_task_before):
         http_client = Requester()  # создание клиента
 
         # берем созданный task из фикстуры словарем
         payload = create_task_before
-        payload["task_num"] = 2315151
+        print(payload)
+        payload["task_id"] = 2315151
+        print(payload)
 
         request = http_client.put_request(endpoint=endpoint, payload=payload)
         assert request.status_code == 415, f"Error has not got: {request.json()['message']}"

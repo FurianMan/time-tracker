@@ -39,6 +39,26 @@ def create_user_before(delete_user_after):
     yield payload
     delete_user_after.append(payload)
 
+@pytest.fixture(scope="function")
+def create_user_before_without_del():
+
+    http_client = Requester()  # создание клиента
+
+    # Получаем ФИО пользователей
+    user = users_generator_settings.get_batch()[0]
+
+    payload = UserData(
+        name=user["name"],
+        surname=user["surname"],
+        patronymic=user["patronymic"]
+    ).__dict__  # получаем атрибуты класса в виде словаря
+
+    request = http_client.post_request(endpoint=userEndpoint, payload=payload)
+    assert request.status_code == 200, f"Error post user: {request.json()['message']}"
+    payload["user_id"] = request.json()['user_id']
+
+    yield payload
+
 
 @pytest.fixture(scope="function")
 def delete_user_after():

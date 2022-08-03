@@ -17,11 +17,11 @@ class TestUserDelete:
     """
     Удаление происходит по обязательным полям: name,surname,position,birthday
     """
-    def test_delUserFullParams(self, create_user_before):
+    def test_delUserFullParams(self, create_user_before_without_del):
         http_client = Requester()
 
         # берем созданного пользователя из фикстуры словарем
-        payload = create_user_before
+        payload = create_user_before_without_del
         payload["user_id"] = 0
 
         request = http_client.delete_request(endpoint=endpoint, payload=payload)
@@ -32,11 +32,11 @@ class TestUserDelete:
     """
     Удаление происходит по обязательным полям: user_id
     """
-    def test_delUserById(self, create_user_before):
+    def test_delUserById(self, create_user_before_without_del):
         http_client = Requester()
 
         # берем созданного пользователя из фикстуры словарем
-        payload = create_user_before
+        payload = create_user_before_without_del
 
         request = http_client.delete_request(endpoint=endpoint, payload=payload)
         assert (
@@ -80,7 +80,28 @@ class TestUserDelete:
             birthday=birthday,
         ).__dict__  # получаем атрибуты класса в виде словаря
 
-        request = http_client.post_request(endpoint=endpoint, payload=payload)
+        request = http_client.delete_request(endpoint=endpoint, payload=payload)
         assert (
             request.status_code == 415
+        ), f"Error has not got: {request.json()['message']}"
+
+
+
+    """
+    Удаление несуществующего пользователя
+    """
+    def test_delUserNeverExistedErr(self):
+        http_client = Requester()
+
+        payload = UserData(
+            name="Меня",
+            surname="Никогда",
+            patronymic="Не",
+            position="Было",
+            birthday="9999-08-01",
+        ).__dict__  # получаем атрибуты класса в виде словаря
+
+        request = http_client.delete_request(endpoint=endpoint, payload=payload)
+        assert (
+            request.status_code == 404
         ), f"Error has not got: {request.json()['message']}"

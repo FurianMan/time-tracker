@@ -35,7 +35,7 @@
     </Logger> -->
     <!-- <Root level="info" additivity="false"> -->
     <!-- <Logger name="com.github.FurianMan.time_tracker" level="ALL"/> -->
-    <Root level="DEBUG" additivity="false">
+    <Root level="INFO" additivity="false">
     <!--Possible value ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and OFF -->
         <!-- <AppenderRef ref="LogToFile"/> -->
         <AppenderRef ref="LogToConsole"/>
