@@ -300,11 +300,13 @@ logs/
 docker-compose up --build -d
 ```
 
+<span style="color:red">**Внимание!** Без этапа `Сборка проекта` при запуске вы получите ошибку</span>
+
 Первый запуск или запуск после удаления настроек бд (об этом коснемся позже) старт приложения может занять некоторое время.
-Понять, что приложение готово к работе можно по следующим логами
+Понять, что приложение готово к работе можно по следующим логам:
 
 <details>
-  <summary>Пример логов с ротаций </summary>
+  <summary>Пример успешного старта приложения</summary>
 
   ```
 2022-08-04 16:04:05.444 [INFO ] [main] HttpServerMain - HTTP Server has been started successfully
@@ -321,7 +323,7 @@ docker-compose up --build -d
 - по пути `time-tracker-master/docker/java/app/logger/logs/time_tracker.log`
 - через команду `docker logs time-tracker`
 
-Долгий старт обусловлен настройкой mysql, т.е. работает стартовый скрипт, который готовит базу данных для приложения и характеристиками хоста.
+Долгий старт обусловлен настройкой mysql, т.е. работает стартовый скрипт, который готовит базу данных для приложения, а также обсуловлен характеристиками хоста.
 
 После успешного старта приложения можно отправить ему тестовый запрос:
 ```
@@ -342,18 +344,7 @@ curl http://localhost:6969/time-tracker/version
   <summary>Директория data/</summary>
   ```
 data/
-├── #ib_16384_0.dblwr
-├── #ib_16384_1.dblwr
-├── #innodb_redo
-├── #innodb_temp
 ├── auto.cnf
-├── binlog.000001
-├── binlog.000002
-├── binlog.index
-├── ca-key.pem
-├── ca.pem
-├── client-cert.pem
-├── client-key.pem
 ├── ib_buffer_pool
 ├── ibdata1
 ├── ibtmp1
@@ -367,8 +358,7 @@ data/
 ├── server-key.pem
 ├── sys
 ├── time_tracker
-├── undo_001
-└── undo_002
+...
   ```
 </details>
 
@@ -377,9 +367,9 @@ data/
 2. `docker rm database`
 3. `sudo rm -rf data/` - команда выполняется из директории `mysql/`
 
-<span style="color:red">**Внимание!** Без этапа `Сборка проекта` при запуске вы получите ошибку</span>
-
 ## Интеграционное тестирование приложения
+
+<span style="color:red">**Внимание!** Без этапа `Запуск приложения` нет никакого смысла запускать тесты.</span>
 
 ### Подготовка к запуску тестов
 

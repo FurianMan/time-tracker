@@ -1,0 +1,16 @@
+openapi: "3.0.3"
+info:
+  title: API приложения time-tracker
+  version: "1.0"
+  description: |
+    Описывает способы взаимодействия с Многопользовательским приложением time-tracker
+
+  contact:
+    name: Vladislav Rikhter
+    email: rihtervladislav6@gmail.com
+
+components:
+  securitySchemes:
+    BasicAuthentication:
+      type: http
+      scheme: basic
