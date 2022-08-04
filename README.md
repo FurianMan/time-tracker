@@ -181,6 +181,117 @@ target/
 
 ## Настройка приложения перед запуском
 
+Главный конфигурационный файл находится по пути `time-tracker-master/docker/docker-compose.yml`
+
+<details>
+  <summary>Содержимое `docker-compose.yml` с пояснениями</summary>
+
+  ```
+version: "3"
+services:
+  database:
+    image: mysql:8.0  # Собираем контейнер из образа
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root  # вы можете установить пароль, который устраивает вас
+      LANG: C.UTF-8  # Установка кодировки в бд
+      TZ: Asia/Novosibirsk  # Установка часового пояса в контейнере
+    restart: always  # Включение перезапуска, если контейнер упал
+    # ports:  # по-умолчанию выключено проксирование на порт хоста.
+    #   - "3308:3306"
+    volumes:
+      - ./mysql/database.sql:/docker-entrypoint-initdb.d/database.sql  # Передача контейнеру стартового скрипта, который настроит бд
+      - ./mysql/data:/var/lib/mysql  # Монтирование данных бд к хосту, чтобы после удаления контейнера не терялись данные из него
+      - ./mysql/mycustom.cnf:/etc/mysql/conf.d/custom.cnf  # Дополнительные конфигурационные настройки для бд
+
+  app:
+    build: ./java/  # Собираем образ и потом уже контейнер
+    image: time-tracker:1.0  
+    container_name: time-tracker
+    environment:
+      APP_PORT: 6969  # Порт внутри контейнера, на котором запустится приложение. Если его меняете, то и не забудь отредактировать `ports:`
+      TZ: Asia/Novosibirsk  # Установка часового пояса в контейнере
+      CLEAR_DATA_TIME: "2022-08-03"  # Устанавливается дата, начиная с которой будут удаляться данные из mysql, в этом примере удаляются данные начиная с 2022-08-03 включительно.
+    ports:
+      - "6969:6969"  # Проксирование порта хоста на порт контейнера
+    volumes:
+      - ./java/app/logger:/logger  # Монтирование логгера для приложения. Нужно для того, чтобы менять настройки логов runtime
+    depends_on:
+      - database
+    links:
+      - "database:db"  # Связь между контейнерами
+    restart: always
+
+  ```
+</details>
+
+Таким образом из важных параметров вам следует настроить следующие:
+1. TZ - ваш часовой пояс в двух контейнерах. Это очень важно, т.к. при создании задач время будет зависеть от времени в контейнере.
+2. MYSQL_ROOT_PASSWORD - пароль, с которомы вы будете подключаться к mysql
+3. CLEAR_DATA_TIME - дата, начиная с которой, информация в бд считает устаревшей и будет удалена. Удаление происходит самим приложением каждый день в 23:50
+
+### Настройка логирования (log4j2)
+
+Для настройки логирования нужно открыть файл по следующему пути `time-tracker-master/docker/java/app/logger/log4j2.xml`
+
+<details>
+  <summary>Содержимое `log4j2.xml` с пояснениями </summary>
+
+  ```
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+<Appenders>
+    <Console name="LogToConsole" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{1} - %msg%n"/>
+    </Console>
+    <!-- <File name="LogToFile" fileName="/logger/logs/time_tracker.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c - %msg%n"/>
+    </File> -->
+    <RollingFile name="LogToRollingFile" fileName="/logger/logs/time_tracker.log"  # Настройка записи логов в файл + ротация этих логов.
+                    filePattern="/logger/logs/$${date:yyyy-MM}/time_tracker-%d{MM-dd-yyyy}-%i.log.gz">  # Как будет выполнена ротация
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%t] %c{1} - %msg%n"/>  # Выражение, которое определяет как выглядит информация в логах
+			<Policies>  # Политики ротации
+				<TimeBasedTriggeringPolicy/>
+				<SizeBasedTriggeringPolicy size="10 MB"/>
+			</Policies>
+		</RollingFile>
+</Appenders>
+<Loggers>
+    <Root level="INFO" additivity="false">  # Уровень логов и запрет на дублирование
+    <!--Possible value ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, and OFF -->  # Возможные уровни логов
+        <!-- <AppenderRef ref="LogToFile"/> --> 
+        <AppenderRef ref="LogToConsole"/>  # Вывод логов в консоль контейнера
+        <AppenderRef ref="LogToRollingFile"/>  # Вывод логов в файл
+    </Root>
+</Loggers>
+</Configuration>
+  ```
+</details>
+
+Из всех этих параметров нужно обратить внимание на:
+1. monitorInterval - передается значение в секундах, каждый этот интервал будет перечитываться файл конфигурации сервисом. Если 30 секунд для вас много - измените на меньшее значение
+2. Root level="INFO" - этот параметр отвечает за уровень логов, который будет отдавать сервис.
+3. SizeBasedTriggeringPolicy size - максимальный размер файла при достижении которого будет выполнена ротация. Так же ротация выполняется по времени каждый день.
+
+Таким образом когда вы настроите и запустите приложение, то логи будут находиться по пути `time-tracker-master/docker/java/app/logger/logs`
+Выглядеть с ротацией это будет вот так 
+
+<details>
+  <summary>Пример логов с ротаций </summary>
+
+  ```
+logs/
+├── 2022-07
+│   ├── time_tracker-07-28-2022-1.log.gz
+│   ├── time_tracker-07-29-2022-1.log.gz
+│   ├── time_tracker-07-30-2022-1.log.gz
+│   └── time_tracker-07-31-2022-1.log.gz
+├── 2022-08
+│   ├── time_tracker-08-02-2022-1.log.gz
+│   └── time_tracker-08-03-2022-1.log.gz
+└── time_tracker.log
+  ```
+</details>
 
 ## Интеграционное тестирование приложения
 
@@ -232,4 +343,4 @@ python3 -m pytest -s -v tests/*
 ```
 Ключ -v позволяет включить verbose mode , а ключи -s отображает команду print
 
-Продолжительность тестов около 10 минут, это обусловленно тем, что для тестирования получения статистики - эту статистику сначала надо создать.
+Продолжительность тестов около 12 минут, это обусловленно тем, что для тестирования получения статистики - эту статистику сначала надо создать.
