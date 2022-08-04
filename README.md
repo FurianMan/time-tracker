@@ -274,7 +274,7 @@ services:
 3. SizeBasedTriggeringPolicy size - максимальный размер файла при достижении которого будет выполнена ротация. Так же ротация выполняется по времени каждый день.
 
 Таким образом когда вы настроите и запустите приложение, то логи будут находиться по пути `time-tracker-master/docker/java/app/logger/logs`
-Выглядеть с ротацией это будет вот так 
+Выглядеть с ротацией это будет вот так:
 
 <details>
   <summary>Пример логов с ротаций </summary>
@@ -292,6 +292,92 @@ logs/
 └── time_tracker.log
   ```
 </details>
+
+## Запуск и управление приложением
+
+Перейдем в директорию `time-tracker-master/docker`, именно здесь у нас имеется файл `docker-compose.yml`, запускаем наше приложение следующей командой:
+```
+docker-compose up --build -d
+```
+
+Первый запуск или запуск после удаления настроек бд (об этом коснемся позже) старт приложения может занять некоторое время.
+Понять, что приложение готово к работе можно по следующим логами
+
+<details>
+  <summary>Пример логов с ротаций </summary>
+
+  ```
+2022-08-04 16:04:05.444 [INFO ] [main] HttpServerMain - HTTP Server has been started successfully
+2022-08-04 16:04:05.445 [INFO ] [main] CheckConnectionToDB - Connecting to database...
+2022-08-04 16:04:05.508 [ERROR] [main] CheckConnectionToDB - Connection failed, new try starting...
+2022-08-04 16:04:10.510 [ERROR] [main] CheckConnectionToDB - Connection failed, new try starting...
+2022-08-04 16:04:15.668 [INFO ] [main] CheckConnectionToDB - Database connection has been installed successfully
+  ```
+</details>
+
+Т.е. после успешного подключения к бд.
+
+Логи можно посмотреть:
+- по пути `time-tracker-master/docker/java/app/logger/logs/time_tracker.log`
+- через команду `docker logs time-tracker`
+
+Долгий старт обусловлен настройкой mysql, т.е. работает стартовый скрипт, который готовит базу данных для приложения и характеристиками хоста.
+
+После успешного старта приложения можно отправить ему тестовый запрос:
+```
+curl http://localhost:6969/time-tracker/version
+```
+
+Дополнительные команды, которые могут быть полезны:
+1. `docker container stop time-tracker` - остановка контейнера
+2. `docker rm time-tracker` - удаление контейнера
+3. `docker rmi time-tracker:1.0` - удаление образа из которого создается контейнер
+
+При удалении контейнера database вы не удалите информацию, которую успели накопить. 
+Вся эта информация хранится по пути `time-tracker-master/docker/mysql/data/`
+
+Выглядит следующим образом:
+
+<details>
+  <summary>Директория data/</summary>
+  ```
+data/
+├── #ib_16384_0.dblwr
+├── #ib_16384_1.dblwr
+├── #innodb_redo
+├── #innodb_temp
+├── auto.cnf
+├── binlog.000001
+├── binlog.000002
+├── binlog.index
+├── ca-key.pem
+├── ca.pem
+├── client-cert.pem
+├── client-key.pem
+├── ib_buffer_pool
+├── ibdata1
+├── ibtmp1
+├── mysql
+├── mysql.ibd
+├── mysql.sock -> /var/run/mysqld/mysqld.sock
+├── performance_schema
+├── private_key.pem
+├── public_key.pem
+├── server-cert.pem
+├── server-key.pem
+├── sys
+├── time_tracker
+├── undo_001
+└── undo_002
+  ```
+</details>
+
+Таким образом, если вы действительно хотите полностью избавиться от всей информации из mysql здесь и сейчас, то:
+1. `docker container stop database`
+2. `docker rm database`
+3. `sudo rm -rf data/` - команда выполняется из директории `mysql/`
+
+<span style="color:red">**Внимание!** Без этапа `Сборка проекта` при запуске вы получите ошибку</span>
 
 ## Интеграционное тестирование приложения
 
