@@ -41,7 +41,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
 Добавьте репозиторий Docker в источники APT:
 
-span style="color:yellow">**Внимание!** Будьте внимательны при указании дистрибутива. В примере используется для Ubuntu 18.04. Смените при необходимости</span>
+<span style="color:yellow">**Внимание!** Будьте внимательны при указании дистрибутива. В примере используется для Ubuntu 18.04. Смените при необходимости</span>
 ```
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 ```
@@ -53,7 +53,7 @@ sudo apt update
 
 Убедитесь, что установка будет выполняться из репозитория Docker, а не из репозитория Ubuntu по умолчанию:
 
-<span style="color:yellow">**Внимание!** Источник должен быть примерно таким "https://download.docker.com/linux/ubuntu bionic/stable amd64 Packages"</span>
+<span style="color:yellow">**Внимание!** Источник должен быть примерно таким: "https://download.docker.com/linux/ubuntu bionic/stable amd64 Packages"</span>
 ```
 apt-cache policy docker-ce
 ```
@@ -144,7 +144,7 @@ sudo update-alternatives --config java
 
 ## Сборка проекта
 
-Переходим в директорию `/time-tracker-master/docker/java/app`, после чего выполняем следующие команды:
+Переходим в директорию `time-tracker-master/docker/java/app`, после чего выполняем следующие команды:
 1. mvn compiler:compile - компилирует исходный код приложения в байткод понятный для jvm.
 2. mvn compiler:testCompile - компилирует исходный код модульных тестов для приложения в байткод понятный для jvm.
 
@@ -186,6 +186,8 @@ target/
 
 ### Подготовка к запуску тестов
 
+Т.к. тестирование происходит на Ubuntu 18.04 , то лучшим способом будет запустить нужную версию python через виртуальное окружение.
+
 <span style="color:yellow">**Внимание!** Запуск тестов тестировался на python3.8 и python3.9, в примере будет использоваться python3.9</span>
 
 Посмотреть версию python можно через команду:
@@ -204,33 +206,27 @@ sudo apt install python3.9
 
 Так же устанавливаем дополнительные пакеты для корректной работы
 ```
-sudo apt install python3.9-distutils python3-pip
+sudo apt install python3.9-distutils python3-pip python3.9-venv 
+``` 
+Теперь переходим в директорию с тестами `time-tracker-master/pytests` и создаем виртуальное окружение:
 ```
-
-После этого устаналвиваем python3.9 для системы по-умолчанию:
-
+python3.9 -m venv .venv
 ```
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 2
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1
-sudo update-alternatives --config python
+Активируем его:
 ```
+source .venv/bin/activate
+```
+<span style="color:yellow">**Внимание!** Деактивация происходит командой `deactivate`</span>
 
-Т.к. в примере Ubuntu 18.04, то в ней присутствует только python3.6 изначально. 
-
-Далее обновляем pip3:
+Далее обновляем pip3 и устанавливаем зависимости:
 ```
 pip3 install --upgrade pip
-pip3 install --upgrade setuptools
-```
-
-Теперь переходим в директорию с тестами `/time-tracker-master/pytests` и устанавливаем зависимости:
-```
 pip3 install -r requirements.txt
 ```
 
 ### Запуск тестов
 
-Запуск тестов происзводится из директории `/time-tracker-master/pytests` следующей командой:
+Запуск тестов происзводится из директории `time-tracker-master/pytests` следующей командой:
 ```
 python3 -m pytest -s -v tests/*
 ```
