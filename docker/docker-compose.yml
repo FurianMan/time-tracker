@@ -18,12 +18,13 @@ services:
 
   app:
     build: ./java/
-    image: time-tracker:0.1
+    image: time-tracker:1.0
     container_name: time-tracker
     environment:
       APP_PORT: 6969
       TZ: Asia/Novosibirsk
       CLEAR_DATA_TIME: "2022-08-03"
+      APP_VERSION: "Time Tracker Version 1.0"
     ports:
       - "6969:6969"
     volumes:

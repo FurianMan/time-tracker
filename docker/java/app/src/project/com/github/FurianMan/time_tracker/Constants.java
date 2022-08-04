@@ -12,7 +12,7 @@ public class Constants {
     public static final String connectionString = "jdbc:mysql://db:3306/time_tracker";
     public static final String loginDB = "javauser";
     public static final String passwordDB = "javapassword";
-    public static final String appVersion = "Time Tracker Version 0.1\n";
+    public static final String appVersion = Utilities.getEnvVar("APP_VERSION");
     public static final String contentType = "Content-Type";
     public static final String jsonFormat = "application/json;charset=utf-8";
     public static final String encoding = "utf-8";

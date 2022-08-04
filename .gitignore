@@ -2,3 +2,4 @@ docker/mysql/data
 docker/java/app/logger/logs/
 docker/java/app/target
 **/__pycache__/
+**.venv/

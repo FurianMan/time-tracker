@@ -78,9 +78,7 @@ class TestTaskClose:
 
         # берем созданный task из фикстуры словарем
         payload = create_task_before
-        print(payload)
         payload["task_id"] = 2315151
-        print(payload)
 
         request = http_client.put_request(endpoint=endpoint, payload=payload)
         assert request.status_code == 415, f"Error has not got: {request.json()['message']}"
