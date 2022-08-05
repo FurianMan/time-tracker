@@ -9,7 +9,6 @@ import java.net.InetSocketAddress;
 
 import static com.github.FurianMan.time_tracker.Constants.httpServerMainLogger;
 import static com.github.FurianMan.time_tracker.Constants.serverPort;
-
 public class HttpServerMain {
     public static final Gson gson = new GsonBuilder()
             .setExclusionStrategies(new ExclusionStrategy() {

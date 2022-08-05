@@ -35,8 +35,8 @@ public class DeleteUser {
         // Делаем проверку переменных, чтобы убедиться, что хотя бы один из способов удаления у нас доступен
         if (user_id == 0 &&
                 (name == null || surname == null || birthday == null || position == null)) {
-            deleteUserLogger.error("Request does not have required fields for deleting, please check documentation");
-            throw new ApplicationException("Cannot delete user from database", 415);
+            deleteUserLogger.error("Cannot delete user from database. Request does not have required fields for deleting.");
+            throw new ApplicationException("Request does not have required fields for deleting, please check documentation", 415);
         }
         if (delUser.getUser_id() != 0) {
              /*

@@ -7,7 +7,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.FurianMan.time_tracker.Constants.*;
-
 public class HandleReqVersion {
     /**
      * Метод для обработки запросов по url /time-tracker/version

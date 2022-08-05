@@ -8,6 +8,4 @@ public abstract class ResponseStats {
 
     public abstract void addStats(TimeStatsSum timeStatsSum);
     public abstract void addStats(TimeStatsPeriod timeStatsPeriod);
-
-
 }

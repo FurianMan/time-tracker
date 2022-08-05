@@ -29,6 +29,7 @@ public class UpdateUser {
             throw new ApplicationException("One or more required fields are empty in PUT query, check fields: name, surname, birthday, position, user_id", 415);
         }
         // получаем экземпляр класса с текущими значениями из БД и назначаем id
+        // Если пользователь не найден, то отдаем 404
         TableUsers userDB = getUser(userForUpdate);
         int user_id = userDB.getUser_id();
         String name;
