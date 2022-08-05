@@ -52,6 +52,9 @@ public class Utilities {
      * newName, newSurname, newPatronymic, newPosition
      * если поле null, то пропускаем его
      *
+     * Валидация по дате:
+     * birthday, newBirthday
+     *
      * @param newUser - пользователь со значениями из http запроса.
      */
     public static void validateUserFields(TableUsers newUser) {
