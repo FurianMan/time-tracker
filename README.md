@@ -427,7 +427,12 @@ python3 -m pytest -s -v tests/*
 Описание API построена на спецификации openAPI.
 
 В директории `time-tracker-master/openapiDocs` имеется файл с описанием интерфейса `time_tracker_openapi.yaml`
-Чтобы посмотреть все возможные команды в удобном виде нужно запустить UI приложение следующей командой:
+Его можно посмотреть двумя способами:
+1. Поднять docker container и смотреть на хосте
+2. Обратиться к стороннему сайту `https://editor.swagger.io/` и открыть файл там.
+
+Подробнее про 1-ый вариант
+Запустить UI приложение следующей командой:
 ```
 docker run -d --name swagger -p 80:8080 -e SWAGGER_JSON=/foo/time_tracker_openapi.yaml -v ~/time-tracker-master/openapiDocs/:/foo swaggerapi/swagger-ui
 ```

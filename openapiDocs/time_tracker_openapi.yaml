@@ -580,7 +580,3 @@ components:
         user_id:
           type: integer
           example: 1
-            
-
-
-          

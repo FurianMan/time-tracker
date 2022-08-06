@@ -20,8 +20,6 @@ public class TableUsers {
     private String newSurname;
     private String newPosition;
     private String newBirthday;
-//    @Expose
-//    private final String tableDestination = "time_tracker.users";
 
     public TableUsers() {
     }
