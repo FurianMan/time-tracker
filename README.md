@@ -131,8 +131,75 @@ sudo apt install maven
 ```
 java -version
 ```
+<span style="color:red">**Внимание!** Вам может выдать правильную версию jdk, но при сборке буду проблемы"</span>
+Чтобы такого избежать, надо проверить действительно ли все инструменты java имеются в наличии в системе:
 
-Если у вас другая версия, то нужно установить java 11:
+<details>
+  <summary>Неправильный вывод</summary>
+
+  ```
+tester@rikhter-218802:~$ ll /usr/lib/jvm/java-11-openjdk-amd64/bin
+total 188
+drwxr-xr-x 2 root root   4096 Aug  7 11:45 ./
+drwxr-xr-x 7 root root   4096 Aug  7 11:45 ../
+-rwxr-xr-x 1 root root  10304 Jul 22 09:14 java*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jjs*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 keytool*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 pack200*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 rmid*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 rmiregistry*
+-rwxr-xr-x 1 root root 107408 Jul 22 09:14 unpack200*
+  ```
+</details>
+
+<details>
+  <summary>Правильный вывод</summary>
+
+  ```
+tester@rikhter-218802:~$ ll /usr/lib/jvm/java-11-openjdk-amd64/bin
+total 500
+drwxr-xr-x 2 root root   4096 Aug  7 11:50 ./
+drwxr-xr-x 9 root root   4096 Aug  7 11:50 ../
+-rwxr-xr-x 1 root root  10376 Jul 22 09:14 jaotc*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jar*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jarsigner*
+-rwxr-xr-x 1 root root  10304 Jul 22 09:14 java*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 javac*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 javadoc*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 javap*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jcmd*
+-rwxr-xr-x 1 root root  10368 Jul 22 09:14 jconsole*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jdb*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jdeprscan*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jdeps*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jfr*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jhsdb*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jimage*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jinfo*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jjs*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jlink*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jmap*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jmod*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jps*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jrunscript*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jshell*
+-rwxr-xr-x 1 root root  10352 Jul 22 09:14 jstack*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jstat*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 jstatd*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 keytool*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 pack200*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 rmic*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 rmid*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 rmiregistry*
+-rwxr-xr-x 1 root root  10320 Jul 22 09:14 serialver*
+-rwxr-xr-x 1 root root 107408 Jul 22 09:14 unpack200*
+
+  ```
+</details>
+
+Правильный вывод можно добиться установкой пакета ниже.
+
+Если у вас другая версия или её нет совсем, то нужно установить java 11:
 ```
 sudo apt install openjdk-11-jdk
 ```
@@ -177,7 +244,13 @@ target/
 </details>
 
 3. mvn surefire:test - запуск модульных тестов.
-4. mvn javadoc:javadoc - генерация документации java
+4. mvn javadoc:javadoc - генерация документации java.
+Чтобы посмотреть javadoc, достаточно открыть любой html файл в браузере. Например `time-tracker-master/docker/java/app/target/site/apidocs/index.html`.
+Если вы не можете это сделать, например по причине того, что на хосте нет браузера, то можно скачать файл с документацией с сервера через scp 
+```
+scp -r tester@100.110.2.52:/home/tester/time-tracker-master/docker/java/app/target/site ./
+```
+Этой командой вы загрузите с удаленного хоста всю документацию в текущую директорию, откуда выполняете команду. Создастся директория `site` и в ней буду все файлы. 
 5. mvn assembly:single - сбор проекта в один jar-архив со всеми зависимостями.
 
 ## Настройка приложения перед запуском
